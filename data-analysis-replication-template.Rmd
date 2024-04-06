@@ -48,8 +48,8 @@ The variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the b
 
 ```{r}
 d <- d |> mutate(relBrnchDiamCategories = case_when(
-  relBrnchDiamNsTl > 1 ~ "Large",
   relBrnchDiamNsTl >= 0.5 & relBrnchDiamNsTl <= 1 ~ "Medium",
+  relBrnchDiamNsTl > 1 ~ "Large",
   relBrnchDiamNsTl < 0.5 ~ "Small",
   TRUE ~ NA
   ))
@@ -110,26 +110,33 @@ d <- d |> mutate(GaitType2 = case_when( #Categorizing gait types based on both f
 ))
 ```
 
-Here, I am attempting to recreate "**Table 1**. Number of strides for different substrate diameter and orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea*" using the updated dataset (p. 4). Dunham *et al*. (2020) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
+##Descriptive Statistics
+
+Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101) (p. 4). Dunham *et al*. (2020) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
 
 ```{r}
-tab1a <- (table(d$Binomial,d$relBrnchDiamCategories))
+tab1a <- (table(d$Binomial,d$relBrnchDiamCategories)) #Creating a table summarizing the frequency of each substrate diameter category across observations of Saguinus and Cebuella strides
 ```
 
 ```{r}
-tab1b <- (table(d$Binomial,d$SbstOrientCategories))
+tab1b <- (table(d$Binomial,d$SbstOrientCategories)) #Creating a table summarizing the frequency of each substrate orientation category across observations of Saguinus and Cebuella strides
 ```
 
 ```{r}
-tab1 <- cbind(tab1a,tab1b)
-tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrate diameter and orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea*") |> 
-        add_header_above(c(" " = 1, "Substrate diameter" = 3, "Substrate orientation" = 3)) |>
-        kable_styling(full_width = FALSE) %>%
-        row_spec(0, extra_css = "margin-bottom: 10px;")
+tab1 <- cbind(tab1a,tab1b) #Combining the above two tables to more accurately replicate Table 1
+tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrate diameter and orientation categories in free-ranging <i>Saguinus tripartitus</i> and <i>Cebuella pygmaea</i>")|> #Adding a title
+        add_header_above(c(" " = 1, "Substrate diameter" = 3, "Substrate orientation" = 3))|> #Adding subtitles over the specified groups of columns
+        kable_styling(full_width = FALSE) |> #Fixing the spacing of the columns, which were crowded together without this specification
+        row_spec(0, extra_css = "margin-bottom: 10px;") #Fixing the spacing of the rows, which were crowded together without this specification
 (tab1)
 ```
+Here is Table 1 for comparison (Dunham *et al*., 2020, p.4):
 
+```{r echo = FALSE, width = "###px"}
+knitr::include_graphics("images/Table1.jpg")
+```
 
+My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020). Dunham et al. (2020) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5. Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1. Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1. Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020). 
 
 ## Statistical Replications/Reanalysis
 
