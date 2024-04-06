@@ -17,6 +17,7 @@ library(data.table)
 library(readxl)
 library(gt)
 library(gtsummary)
+library(ggplot2)
 ```
 
 Loading in data
@@ -31,34 +32,59 @@ d <- d |> mutate(relBrnchDiamCategories = case_when(
   relBrnchDiamNsTl > 1 ~ "Large",
   relBrnchDiamNsTl >= 0.5 & relBrnchDiamNsTl <= 1 ~ "Medium",
   relBrnchDiamNsTl < 0.5 ~ "Small",
-  TRUE ~ "NA"
+  TRUE ~ NA
   ))
+d$relBrnchDiamCategories <- as.factor(d$relBrnchDiamCategories)
 ```
 
 
 Substrate orientation
 ```{r}
 d$Sin_SbstOrient_Numeric <- as.numeric(d$Sin_SbstOrient)
-d <- d |> drop_na("Sin_SbstOrient_Numeric")
 d$Angle_SbstOrient <- (asin(d$Sin_SbstOrient_Numeric))*(180/pi)
 
 d <- d |> mutate(Angle_SbstOrientCategories = case_when(
   Angle_SbstOrient >= -30 & Angle_SbstOrient <= 30 ~ "Horizontal",
   Angle_SbstOrient < -30 ~ "Decline",
   Angle_SbstOrient > 30 ~ "Incline",
-  TRUE ~ "NA"
+  TRUE ~ NA
   ))
+
+d$Angle_SbstOrientCategories <- as.factor(d$Angle_SbstOrientCategories)
 ```
 
 Binomial nomenclature
 ```{r}
 d <- d |> mutate(Species = case_when(
   Genus == "Cebuella" ~ "pygmaea",
-  Genus == "Saguinus" ~ "tripartitus",
-  TRUE ~ "NA"
+  Genus == "Saguinus" ~ "tripartitus"
   ))
 d <- d |> mutate(Binomial = paste(Genus, Species, sep = " "))
 ```
+
+Gait type
+```{r}
+d <- d |>
+  mutate(FL = case_when(
+    relFLldMS <= 0.1 ~ "simultaneous",
+    relFLldMS > 0.1 ~ "staggered"
+  ))
+d <- d |>
+  mutate(HL = case_when(
+    relHLldMS <= 0.1 ~ "simultaneous",
+    relHLldMS > 0.1 ~ "staggered"
+  ))
+
+d <- d |> mutate(GaitType2 = case_when(
+  `Gait Type` == "Sym" ~ "Symmetrical",
+  FL == "simultaneous" & HL == "simultaneous" ~ "Bound",
+  FL == "staggered" & HL == "simultaneous" ~ "Half-bound",
+  FL == "staggered" & HL == "staggered" ~ "Gallop"
+))
+
+```
+
+
 
 
 We used linear mixed models to examine the effects of substrate
@@ -73,6 +99,67 @@ Individual primate was nested within video clip as a random factor
 individuals)
 ```{r}
 
+
+```
+
+
+visualization
+```{r}
+cebuella <- d |>
+  filter(Genus == "Cebuella") |>
+   mutate(GaitType2 = factor(GaitType2, levels = c("Symmetrical", "Gallop", "Half-bound", "Bound"))) |>
+  drop_na(GaitType2)
+saguinus <- d |> 
+  filter (Genus == "Saguinus") |>
+   mutate(GaitType2 = factor(GaitType2, levels = c("Symmetrical", "Gallop", "Half-bound", "Bound"))) |>
+  drop_na(GaitType2)
+
+fig2asaguinus <- ggplot(data = saguinus, aes(fill = GaitType2, x = relBrnchDiamCategories, y = (..count../108*100))) + geom_bar(color = "black", position = "dodge", width = 0.7) + scale_y_continuous(name = "Count", limits = c(0, 100), breaks = seq(0, 100, by = 25)) + scale_fill_manual(values = c("Symmetrical" = "grey90", "Gallop" = "grey65", "Half-bound" = "grey40", "Bound" = "grey15")) + labs(title = "*Saguinus tripartitus*") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white
+        plot.background = element_rect(fill = "white"))
+```
+```{r}
+fig2acebuella <- ggplot(data = cebuella, aes(fill = GaitType2, x = relBrnchDiamCategories, y = (..count../101*100))) + geom_bar(color = "black", position = "dodge",  width = 0.7) + scale_y_continuous(name = "Count", limits = c(0, 100), breaks = seq(0, 100, by = 25)) + scale_fill_manual(values = c("Symmetrical" = "grey90", "Gallop" = "grey65", "Half-bound" = "grey40", "Bound" = "grey15")) + labs(title = "*Cebuella pygmaea*") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white
+        plot.background = element_rect(fill = "white"))
+```
+
+```{r}
+combinedfig2a <- fig2asaguinus + theme(legend.position = "none") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white
+        plot.background = element_rect(fill = "white")) + fig2acebuella + theme(legend.position = "top", legend.justification = "right", strip.placement = "outside") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white
+        plot.background = element_rect(fill = "white")) + labs(fill = NULL)
+
+(combinedfig2a)
+```
+
+
+
+```{r}
+cebuella <- d |>
+  filter(Genus == "Cebuella") |>
+   mutate(GaitType2 = factor(GaitType2, levels = c("Symmetrical", "Gallop", "Half-bound", "Bound"))) |>
+  drop_na(Angle_SbstOrientCategories,GaitType2)
+saguinus <- d |> 
+  filter(Genus == "Saguinus") |>
+  mutate(GaitType2 = factor(GaitType2, levels = c("Symmetrical", "Gallop", "Half-bound", "Bound"))) |>
+  drop_na(Angle_SbstOrientCategories,GaitType2)
+
+fig2bsaguinus <- ggplot(data = saguinus, aes(fill = GaitType2, x = Angle_SbstOrientCategories, y = (..count../101*100))) + geom_bar(color = "black", position = "dodge",  width = 0.7) + scale_y_continuous(name = "Count", limits = c(0, 100), breaks = seq(0, 100, by = 25)) + scale_fill_manual(values = c("Symmetrical" = "grey90", "Gallop" = "grey65", "Half-bound" = "grey40", "Bound" = "grey15")) + labs(title = "*Cebuella pygmaea*")
+```
+
+```{r}
+fig2bcebuella <- ggplot(data = cebuella, aes(fill = GaitType2, x = Angle_SbstOrientCategories, y = (..count../101*100))) + geom_bar(color = "black", position = "dodge",  width = 0.7) + scale_y_continuous(name = "Count", limits = c(0, 100), breaks = seq(0, 100, by = 25)) + scale_fill_manual(values = c("Symmetrical" = "grey90", "Gallop" = "grey65", "Half-bound" = "grey40", "Bound" = "grey15")) + labs(title = "*Cebuella pygmaea*")
+```
+
+```{r}
+combinedfig2b <- fig2bsaguinus + theme(legend.position = "none") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white
+        plot.background = element_rect(fill = "white")) + labs(title = "Saguinus tripartitus", xlab = NULL, ylab = "%") + fig2bcebuella + theme(legend.position = "top", legend.justification = "right", strip.placement = "outside") + theme(panel.background = element_rect(fill = "white"),  # Set panel background color to white 
+        plot.background = element_rect(fill = "white")) + labs(title = "Cebuella pygmaea", fill = NULL, xlab = NULL, ylab = "%")
+
+(combinedfig2b)
+```
+
+
+
+```{r}
 
 ```
 
