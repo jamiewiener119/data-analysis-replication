@@ -7,30 +7,27 @@ output:
 ---
 
 ## Packages Used
-```{r echo=FALSE}
+{tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{lme4},{lmerTest}
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(dplyr)
 library(mosaic)
-library(radiant)
-library(sciplot)
-library(infer)
 library(tidylog)
-library(data.table)
 library(readxl)
-library(gt)
-library(gtsummary)
 library(ggplot2)
 library(formatR)
 library(knitr)
 library(kableExtra)
+library(lme4)
+library(lmerTest)
 ```
-
 
 ## Introduction
 
 [Include a brief summary of the paper you are reanalyzing data from (e.g., the overall objective of the paper, the types of data collected and how sampling was done, what the main results were) and lay out what you intend to replicate.]
 
-## Visualization of Data
+## Exploratory Data Analysis
 
 Here, I'm loading the dataset from Dunham *et al*. (2020).
 ```{r}
@@ -44,10 +41,10 @@ d <- read_excel(f,sheet = 1, col_names = TRUE)
 
 Various kinematic and substrate variables and were calculated by Dunham *et al*. (2020) from the data available in their published dataset (pp. 3-4). 
 
-The variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Dunham *et al*. (2020) used these relative branch diameter ratios to group substrate into three size categories: small ("less than half of an individual’s trunk diameter"), medium ("between half and equal to an individual’s trunk diameter"), and large ("greater than an individual’s trunk diameter") (p. 4). Here, I am adding a new variable to my dataset, **relBrnchDiamCategories**, to categorize substrate for each observation as described above.
+The variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (Dunham *et al*., 2020a). Dunham *et al*. (2020a) used these relative branch diameter ratios to group substrate into three size categories: small ("less than half of an individual’s trunk diameter"), medium ("between half and equal to an individual’s trunk diameter"), and large ("greater than an individual’s trunk diameter") (p. 4). Here, I am adding a new variable to my dataset, **relBrnchDiamCategories**, to categorize substrate for each observation as described above.
 
 ```{r}
-d <- d |> mutate(relBrnchDiamCategories = case_when(
+d <- d |> mutate(relBrnchDiamCategories = case_when( #Creating new variable categorizing relative substrate diameter
   relBrnchDiamNsTl >= 0.5 & relBrnchDiamNsTl <= 1 ~ "Medium",
   relBrnchDiamNsTl > 1 ~ "Large",
   relBrnchDiamNsTl < 0.5 ~ "Small",
@@ -57,13 +54,13 @@ d$relBrnchDiamCategories <- as.factor(d$relBrnchDiamCategories) #As factor becau
 (levels(d$relBrnchDiamCategories))
 ```
 
-The variables sine of substrate orientation angle (**Sin_SbstOrient**) and cosine of substrate orientation angle (**Cos_SbstOrient**) are transformations of the raw substrate orientation angle measurement in degrees (Dunham et al., 2020, p. 4). Dunham *et al*. (2020) used these to group substrate into three orientation categories: horizontal ("between -30 and 30 deg"), decline ("less than -30 deg"), and incline ("greater than 30 deg") (p. 4). Here, I am adding a new variable to my dataset, **SbstOrientCategories**, to categorize substrate for each observation as described above. The choice to use **Sin_SbstOrient** to calculate orientation angle is because, unlike **Cos_SbstOrient**, it can differentiate declines and inclines (p. 4).
+The variables sine of substrate orientation angle (**Sin_SbstOrient**) and cosine of substrate orientation angle (**Cos_SbstOrient**) are transformations of the raw substrate orientation angle measurement in degrees (Dunham et al., 2020a, p. 4). Dunham *et al*. (2020a) used these to group substrate into three orientation categories: horizontal ("between -30 and 30 deg"), decline ("less than -30 deg"), and incline ("greater than 30 deg") (p. 4). Here, I am adding a new variable to my dataset, **SbstOrientCategories**, to categorize substrate for each observation as described above. The choice to use **Sin_SbstOrient** to calculate orientation angle is because, unlike **Cos_SbstOrient**, it can differentiate declines and inclines (Dunham *et al*., 2020a).
 
 ```{r}
 d$Sin_SbstOrient_Numeric <- as.numeric(d$Sin_SbstOrient) #Changing Sin_SbstOrient to numeric
 d$Angle_SbstOrient <- (asin(d$Sin_SbstOrient_Numeric))*(180/pi) #Converting sin to angle (deg)
 
-d <- d |> mutate(SbstOrientCategories = case_when(
+d <- d |> mutate(SbstOrientCategories = case_when( #Creating new variable categorizing substrate orientation
   Angle_SbstOrient >= -30 & Angle_SbstOrient <= 30 ~ "Horizontal",
   Angle_SbstOrient < -30 ~ "Decline",
   Angle_SbstOrient > 30 ~ "Incline",
@@ -84,11 +81,11 @@ d <- d |> mutate(Species = case_when( #Creating new variable, Species
 d <- d |> mutate(Binomial = paste(Genus, Species, sep = " ")) #Creating new variable, Binomial, by concatenating **Genus** and **Species** using paste()
 ```
 
-Dunham *et al*. (2020) define the variables relative forelimb lead duration (**relFLldMS**) and relative hindlimb lead duration (**relHLldMS**) represent "the interval between touchdowns within a limb girdle divided by the total contact duration of the limb girdle" (p. 4). Dunham *et al*. (2020) used these to differentiate symmetrical gaits ("temporal lag between the left and right limbs in each girdle amounted to 50±10% of stride duration") from asymmetrical gaits (values outside the symmetrical gait range) (p. 3). Within asymmetrical gaits, these variables were additionally used to differentiate bounds (both forelimb and hindlimb stance periods were nearly simultaneous), half-bounds (hindlimb stance periods were nearly simultaneous
+Dunham *et al*. (2020a) define the variables relative forelimb lead duration (**relFLldMS**) and relative hindlimb lead duration (**relHLldMS**) represent "the interval between touchdowns within a limb girdle divided by the total contact duration of the limb girdle" (p. 4). Dunham *et al*. (2020a) used these to differentiate symmetrical gaits ("temporal lag between the left and right limbs in each girdle amounted to 50±10% of stride duration") from asymmetrical gaits (values outside the symmetrical gait range) (p. 3). Within asymmetrical gaits, these variables were additionally used to differentiate bounds (both forelimb and hindlimb stance periods were nearly simultaneous), half-bounds (hindlimb stance periods were nearly simultaneous
 but forelimb stance periods were staggered), and gallops (both forelimb and hindlimb stance periods were staggered) (p. 3).
 
 Here, I am first adding two new columns to my dataset, **FL** and **HL**, to store whether forelimb touchdowns and hindlimb touchdowns, respectively, were simultaneous ("the interval between the trailing and leading limb mid-support was ≤10% of total limb pair contact duration") or staggered ("the interval between the trailing and leading limb mid-support was
-≥10% of total limb pair contact duration") for each observation (Dunham *et al.*, 2020, p. 3). Following from this, I am adding a new variable, **GaitType2**, which categorizes each observation as a symmetrical gait, a bound, a half-bound, or a gallop (p. 3).
+≥10% of total limb pair contact duration") for each observation (Dunham *et al.*, 2020a, p. 3). Following from this, I am adding a new variable, **GaitType2**, which categorizes each observation as a symmetrical gait, a bound, a half-bound, or a gallop (p. 3).
 
 ```{r}
 d <- d |> #Categorizing forelimb stance periods as nearly simultaneous or staggered based on relative forelimb lead duration, relFLldMS
@@ -110,9 +107,9 @@ d <- d |> mutate(GaitType2 = case_when( #Categorizing gait types based on both f
 ))
 ```
 
-##Descriptive Statistics
+## Descriptive Statistics
 
-Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101) (p. 4). Dunham *et al*. (2020) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
+Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101) (p. 4). Dunham *et al*. (2020a) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
 
 ```{r}
 tab1a <- (table(d$Binomial,d$relBrnchDiamCategories)) #Creating a table summarizing the frequency of each substrate diameter category across observations of Saguinus and Cebuella strides
@@ -133,14 +130,30 @@ tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrat
 Here is Table 1 for comparison (Dunham *et al*., 2020, p.4):
 
 ```{r echo = FALSE, width = "###px"}
-knitr::include_graphics("images/Table1.jpg")
+knitr::include_graphics("images/Table1.jpg") #Embedding .jpg from folder in repo
 ```
 
-My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020). Dunham et al. (2020) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5. Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1. Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1. Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020). 
+My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020a). Dunham et al. (2020a) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5 (Dunham *et al*., 2020a, p. 4). Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1 (Dunham *et al*., 2020a, p. 4). Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1 (Dunham *et al*., 2020a, p. 4). Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020a). One potential explanation is that **relBrnchDiamNst** in the published dataset is likely a Box–Cox transformed value, as other variables in the published dataset clearly are already transformed according to the methods outlined by Dunham *et al*.'s (2020a) in the "Statistical analyses" section (p. 4). I unfortunately cannot revert these values back to their raw values to test if this is the issue because the lambda value used as the transformation parameter is not specified. 
 
-## Statistical Replications/Reanalysis
+## Inferential Statistical Analysis
+
+### Linear Mixed Models
+
+```{r}
+
+```
+
+We used linear mixed models to examine the effects of substrate
+diameter and substrate orientation on continuous kinematic
+variables, including relative speed, mean DF, mean NSL, relative
+FLLD, relative HLLD and percent aerial phase. Relative speed was
+entered as a covariate in statistical models for mean DF, mean NSL,
+relative FLLD, relative HLLD and percent aerial phase in order to
+control for speed-related effects on these kinematic variables.
 
 [Be sure to **thoroughly** explain what replications you are doing and comment your code so that it is easy for a reader to understand. Include in this section relevant tables/figures/values from the original paper for comparison to what you accomplished with your replication. Note that I want you to do the bulk of any *exposition* using text and markdown syntax outside of code blocks. That is, your document should not just be one big code block with ***R*** style comments but rather a nicely formatted report with code separated from exposition, interpretation, and dicussion.]
+
+## Visualization
 
 ## Summary/Discussion
 
@@ -148,6 +161,6 @@ My values for the number of strides observed for each substrate orientation cate
 
 ## References
 
-Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2020). Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation. *J Exp Biol 15*, *223*(12), jeb217562. https://doi.org/10.1242/jeb.217562
+Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2020a). Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation. *J Exp Biol 15*, *223*(12), jeb217562. https://doi.org/10.1242/jeb.217562
 
-Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., Young, J. W. (2020). Dunham et al.  "Asymmetrical gait kinematics of free-ranging callitrichines in response to changes in substrate diameter and orientation". *figshare*. Dataset. https://doi.org/10.6084/m9.figshare.11923122.v1
+Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., Young, J. W. (2020b). Dunham et al.  "Asymmetrical gait kinematics of free-ranging callitrichines in response to changes in substrate diameter and orientation". *figshare*. Dataset. https://doi.org/10.6084/m9.figshare.11923122.v1
