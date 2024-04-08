@@ -36,6 +36,7 @@ library(Matrix)
 #options(oo)
 
 #I am commenting this here as opposed to including the above in my code to avoid having a package installation in my code
+#Personally, I have {Matrix} v.1.6-5, {lme4} v1.1-35.2, and {lmerTest} v3.1-3 installed.
 ```
 
 ## Introduction to Dunham *et al.* (2020a)
