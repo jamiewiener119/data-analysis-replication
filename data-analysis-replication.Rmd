@@ -7,7 +7,7 @@ output:
 ---
 
 ## Packages Used
-{tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{cowplot|,{lme4},{lmerTest},{Matrix}
+{tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{cowplot},{lme4},{lmerTest},{Matrix}
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -42,38 +42,71 @@ library(Matrix)
 
 ### Summary
 
-### Methods
+In an earlier study of symmetrical gait kinematics in 11 species of free-ranging platyrrhines, Dunham *et al.* (2019) founds that *Saguinus tripartitus* (golden-mantled tamarins) used primarily asymmetrical gaits and *Cebuella pygmaea* (pygmy marmosets) used exclusively asymmetrical gaits. For this reason, Dunham *et al.* (2019) did not include these species in their original analysis but returned to these samples in their paper, "Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation" (2020a). Specifically, Dunham *et al.* (2020a) were interested in how the spatiotemporal kinematics of *S. tripartitus* and *C. pygmaea* gait are affected by the diameter and orientation of substrate, as well as how these kinematics impact substrate displacement during locomotion. 
 
-#### Data Collection
+Video recordings of locomotor bouts were opportunistically recorded for free-ranging *S. tripartitus* and *C. pygmaea* at the Tiputini Biodiversity Station in Amazonian Ecuador (Dunham *et al.*, 2020a). Substrate orientation was measured using a laser range finder; substrate orientation and displacement were later quantified using pixel lengths in the video recordings (Dunham *et al.*, 2020a). Spatiotemporal gait kinematics were assessed in each video using the GaitKeeper package for MATLAB (Dunham *et al.*, 2020a).
 
-#### Variable Names
+#### Statistical Methods
 
-#### Analysis
+#### X^2 Tests
+
+Dunham *et al.* (2020a) conducted X^2 tests to determine the frequencies of different gait types (asymmetrical vs. symmetrical) in relation to the diameter and orientation of a substrate.
+
+#### Linear Mixed Models
+
+Dunham *et al.* (2020a) used linear mixed models to evaluate whether substrate diameter and substrate orientation had a significant effect on each of the spatiotemporal kinematic variables in their dataset, as well as whether there was significant interaction between these fixed effects.
+
+Dunham *et al.* (2020a) also used linear mixed models to evaluate whether each spatiotemporal kinematic variable in their dataset had a significant effect on substrate displacement, as well as whether there was significant interaction between these fixed effects.
+
+#### Binary Logistic Mixed-effects Models
+
+In their evaluation of whether substrate diameter and orientation had significant effects on the kinematic variables in their dataset, binary logistic mixed-effects regression was used in cases where the model did not satisfy the assumptions necessary for linear mixed model regression.
 
 ### Results
 
-### Conclusions
+Dunham *et al.* (2020a) found that both *S. tripartitus* and *C. pygmaea* used primarily asymmetrical gaits, with some symmetrical used at walking speeds.
+
+#### Effect of substrate diameter on gait type and gait kinematics
+
+Dunham *et al.* (2020a) found that substrate diameter had a significant effect on gait type in *S. tripartitus* and *C. pygmaea*. *S. tripartitus* individuals adjusted to more symmetrical gaits or gallops on small diameter substrates, with more half-bounds and bounds used on medium and large diameter substrates (Dunham *et al.*, 2020a). *C. pygmaea* individuals also predominantly used half-bounds and bounds on medium and large diameter substrates (Dunham *et al.*, 2020a). Additionally, substrate diameter had a significant effect on all kinematic variables measured in *S. tripartitus* but did not significantly effect the gait kinematics of *C. pygmaea* (Dunham *et al.*, 2020a).
+
+#### Effect of substrate orientation on gait type and gait kinematics
+
+Dunham *et al.* (2020a) found that substrate orientation did not have a significant effect on gait type in *S. tripartitus* but did have a significant effect on gait type in *C. pygmaea*. *C. pygmaea* used significantly more bounding gaits on inclined substrate, and significantly more half-bounds on horizontal and declined substrates (Dunham *et al.*, 2020a). Additionally, the cosine of substrate orientation had a significant effect on gait kinematics in both *C. pygmaea* and *S. tripartitus*, while the sine of substrate orientation only had a significant effect on gait kinematics in *C. pygmaea* (Dunham *et al.*, 2020a). 
+
+#### Effect of relative speed on gait kinematics
+
+Dunham *et al.* (2020a) found that relative speed significantly affected gait kinematics in both *S. tripartitus* and *C. pygmaea*. 
+
+#### Effect of gait kinematics on substrate displacement
+
+Dunham *et al.* (2020a) found that gait kinematics did not have a significant effect on substrate displacement for either *S. tripartitus* or *C. pygmaea* (Dunham *et al.*, 2020a).
+
+### Conclusion
+
+Overall, Dunham *et al.* (2020a) concluded that *S. tripartitus* and *C. pygmaea*, two species of small-bodied callitrichines, use predominantly asymmetrical gaits and adjust the spatiotemporal kinematics of their gait in response to changes in substrate, a finding that informs future research into reconstructing the ancestral primate condition for gait and the arboreal niche that early primate locomotor evolution may have occurred within.
 
 
 ## My Project Outline
 
 ### Descriptive Statistics
 
-For my descriptive statistics, I will be attempting to replicate Dunham *et al.* (2020a) Table 1, which summarizes the "number of strides for different substrate diameter and orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea*" (p. 4).
+For my descriptive statistics, I will be attempting to replicate Dunham *et al.* (2020a) Table 1, which summarizes the "number of strides for different substrate diameter and orientation categories in free-ranging *S. tripartitus* and *C. pygmaea*" (p. 4).
 
 ### Inferential Statistics
 
 For my inferential statistical analysis, I will be attempting to replicate the linear mixed regression analysis that Dunham *et al.* (2020a) used to evaluate the "effects of substrate
-diameter and substrate orientation on continuous kinematic variables," including relative speed, mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase (p. 4). Dunham *et al.* (2020a) also used binary logistic mixed-effects models for two models because the residual error for these two models was not normally distributed, meaning that they did not "satisfy assumptions of linear mixed regression analysis" (p. 4). Thus, for these models, I will be attempting to replicate the binary logistic mixed-effects regression anaalysis used by Dunham *et al.* (2020a). 
+diameter and substrate orientation on continuous kinematic variables," including relative speed, mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase (p. 4). The results of this anaylsis are summarized in Dunham *et al.* (2020a) Table 2 (p. 6). Dunham *et al.* (2020a) also used binary logistic mixed-effects models for two models because the residual error for these two models was not normally distributed, meaning that they did not "satisfy assumptions of linear mixed regression analysis" (p. 4). Thus, for these models, I will be attempting to replicate the binary logistic mixed-effects regression analysis used by Dunham *et al.* (2020a). 
 
 ### Visualization
 
-For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *Saguinus tripartitus* and *Cebuella pygmaea*.
+For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *S. tripartitus* and *C. pygmaea*.
 
 
 ## Exploratory Data Analysis
 
 Here, I'm loading the dataset from Dunham *et al*. (2020).
+
 ```{r}
 f <- "data/Dunham et al. (2020) dataset.xlsx"
 d <- read_excel(f,sheet = 1, col_names = TRUE)
@@ -83,9 +116,16 @@ d <- read_excel(f,sheet = 1, col_names = TRUE)
 (head(d)) #For a view of the first few lines of the data set
 ```
 
-```{r, warning = FALSE}
-#Some variables that should be numeric were read in as character variables, so I needed to correct this
+Here are the definitions presented by Dunham *et al.* (2020b) for the variables in their published dataset:
 
+```{r}
+variablematrix <- matrix(c("relBrnchDiamNsTl","Sin_SbstOrient","Cos_SbstOrient","Gait Type","relSpeed","Meandf","MeanNSL","relFLldMS","relHLldMS","PercAerial","MeanLphsMS","SubstrateDisp","MovClip","relative branch diameter","sine of substrate orientation angle","cosine of substrate orientation angle","asymmetrical gait vs. symmetrical gait","relative speed","mean duty factor","mean number of supporting limbs","relative forelimb lead duration","relative hindlimb lead duration","percent aerial phase","mean limb phase at midstance","substrate displacement","name of video clip"), ncol = 2, nrow = 13, byrow = FALSE)
+(variablematrix)
+```
+
+Some variables that should be numeric were read in as character variables, so I needed to correct this.
+
+```{r, warning = FALSE}
 class(d$relBrnchDiamNsTl) #Checking; relBrnchDiamNsTl is already numeric
 class(d$Sin_SbstOrient) #Checking
 d$Sin_SbstOrient <- as.numeric(d$Sin_SbstOrient) #Changing Sin_SbstOrient to numeric
@@ -125,6 +165,7 @@ d$relBrnchDiamCategories <- as.factor(d$relBrnchDiamCategories) #As factor becau
 The variables sine of substrate orientation angle (**Sin_SbstOrient**) and cosine of substrate orientation angle (**Cos_SbstOrient**) are transformations of the raw substrate orientation angle measurement in degrees (Dunham et al., 2020a, p. 4). Dunham *et al*. (2020a) used these to group substrate into three orientation categories: horizontal ("between -30 and 30 deg"), decline ("less than -30 deg"), and incline ("greater than 30 deg") (p. 4). Here, I am adding a new variable to my dataset, **SbstOrientCategories**, to categorize substrate for each observation as described above. The choice to use **Sin_SbstOrient** to calculate orientation angle is because, unlike **Cos_SbstOrient**, it can differentiate declines and inclines (Dunham *et al*., 2020a).
 
 Here are the levels in **SbstOrientCategories**:
+
 ```{r}
 d$Angle_SbstOrient <- (asin(d$Sin_SbstOrient))*(180/pi) #Converting sin to angle (deg)
 
@@ -192,7 +233,7 @@ gaittable <- kable(gait, caption = "Number of strides for different gait types i
 
 ## Descriptive Statistics
 
-Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101) (p. 4). Dunham *et al*. (2020a) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
+Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *S. tripartitus* (n=108) and *C. pygmaea* (n=101) (p. 4). Dunham *et al*. (2020a) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
 
 ```{r}
 tab1a <- table(d$Binomial,d$relBrnchDiamCategories) #Creating a table summarizing the frequency of each substrate diameter category across observations of Saguinus and Cebuella strides
@@ -217,14 +258,13 @@ Here is Table 1 for comparison (Dunham *et al*., 2020a, p.4):
 knitr::include_graphics("images/Table1.jpg") #Embedding .jpg from folder in repo
 ```
 
-My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020a). Dunham et al. (2020a) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5 (Dunham *et al*., 2020a, p. 4). Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1 (Dunham *et al*., 2020a, p. 4). Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1 (Dunham *et al*., 2020a, p. 4). Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020a). One potential explanation is that **relBrnchDiamNst** in the published dataset is likely a Box–Cox transformed value, as other variables in the published dataset clearly are already transformed according to the methods outlined by Dunham *et al*.'s (2020a) in the "Statistical analyses" section (p. 4). I unfortunately cannot revert these values back to their raw values to test if this is the issue because the lambda value used as the transformation parameter is not specified. 
-
+My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *S. tripartitus* (n=108) and *C. pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020a). Dunham et al. (2020a) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5 (Dunham *et al*., 2020a, p. 4). Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1 (Dunham *et al*., 2020a, p. 4). Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1 (Dunham *et al*., 2020a, p. 4). Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020a). One potential explanation is that **relBrnchDiamNst** in the published dataset is likely a Box–Cox transformed value, as other variables in the published dataset clearly are already transformed according to the methods outlined by Dunham *et al*.'s (2020a) in the "Statistical analyses" section (p. 4). I unfortunately cannot revert these values back to their raw values to test if this is the issue because the lambda value used as the transformation parameter is not specified. 
 
 ## Inferential Statistical Analysis
 
 ### Linear Mixed Models
 
-Dunham *et al.* (2020a) ran linear mixed model regressions in order to evaluate the effects of substrate diameter and orientation on various kinematic variables of the gait of *Saguinus tripartitus* and *Cebuella pygmaea* individuals, such as:
+Dunham *et al.* (2020a) ran linear mixed model regressions in order to evaluate the effects of substrate diameter and orientation on various kinematic variables of the gait of *S. tripartitus* and *C. pygmaea* individuals, such as:
 
 * Relative speed
 * Mean duty factor
@@ -253,8 +293,7 @@ All together, this code would look like:
 
 lmer(Meandf ~ relSpeed + relBrnchDiamNsT1 + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip))
 
-
-#### Effect of substrate diameter and substrate orientation on relative speed for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on relative speed for *S. tripartitus*
 
 ```{r Saguinus relSpeed Response}
 d$MovClip <- as.factor(d$MovClip)
@@ -271,10 +310,9 @@ Highlighted below for comparison are the relevant results presented in Dunham et
 knitr::include_graphics("images/Table2SaguinusRelSpeed.jpg") #Embedding .jpg from folder in repo
 ```
 
-While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model there is a significant correction between substrate diameter and cosine of substrate orientation, respectively, and relative speed, while there is not a significant correlation between sine of substrate orientation and relative speed.
+While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model there is a significant effect of substrate diameter and cosine of substrate orientation on relative speed, while there is not a significant correlation between sine of substrate orientation and relative speed.
 
-
-#### Effect of substrate diameter and substrate orientation on **relative speed** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **relative speed** for *C. pygmaea*
 
 ```{r Cebuella relSpeed response}
 cebuella <- d |> filter(Genus == "Cebuella")
@@ -291,8 +329,7 @@ knitr::include_graphics("images/Table2CebuellaRelSpeed.jpg") #Embedding .jpg fro
 
 While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model there is a significant correction between cosine of substrate orientation and relative speed, while substrate diameter and sine of substrate orientation do not have a significant effect on relative speed.
 
-
-#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *S. tripartitus*
 
 ```{r Saguinus Meandf Response}
 #For Saguinus, effect of substrate diameter and substrate orientation on mean duty factor
@@ -308,8 +345,7 @@ knitr::include_graphics("images/Table2SaguinusMeanDF.jpg") #Embedding .jpg from 
 
 While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model relative speed and cosine of substrate orientation each have a significant effect on mean duty factor, while sine of substrate orientation does not have a significant effect on mean duty factor. However, my replication and the original model differ in that mine does not support a significant correlation between substrate diameter and mean duty factor while the original model did find this to be significant.
 
-
-#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *C. pygmaea*
 
 ```{r Cebuella Meandf Response}
 #For Cebuella, effect of substrate diameter and substrate orientation on mean duty factor
@@ -326,7 +362,7 @@ knitr::include_graphics("images/Table2CebuellaMeanDF.jpg") #Embedding .jpg from 
 
 While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model relative speed and sine of substrate orientation each have a significant effect on mean duty factor, while substrate diameter and cosine of substrate orientation do not have a significant effect on mean duty factor.
 
-#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *S. tripartitus*
 
 ```{r Saguinus MeanNSL Response}
 m3s <- lmer(MeanNSL ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
@@ -339,10 +375,9 @@ Highlighted below for comparison are the relevant results presented in Dunham et
 knitr::include_graphics("images/Table2SaguinusMeanNSL.jpg") #Embedding .jpg from folder in repo
 ```
 
-While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model relative speed is significantly correlated with mean number of supporting limbs, while sine of substrate orientation does not have a significant effect. However, my replication and the original model differ in that mine does not support a significant effect by both substrate diameter and cosine of substrate orientation on mean number of supporting limbs while the original model did find these both to be significant.
+While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model relative speed is significantly correlated with mean number of supporting limbs, while sine of substrate orientation does not have a significant effect. However, my replication and the original model differ in that mine does not support a significant effect by substrate diameter and cosine of substrate orientation on mean number of supporting limbs while the original model did find these both to be significant.
 
-
-#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *C. pygmaea*
 
 ```{r Cebuella MeanNSL Response}
 #For Cebuella, effect of substrate diameter and substrate orientation on mean number of supporting limbs
@@ -360,7 +395,7 @@ knitr::include_graphics("images/Table2CebuellaMeanNSL.jpg") #Embedding .jpg from
 While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, relative speed is significantly correlated with mean number of supporting limbs, while branch diameter and cosine of substrate orientation each do not have a significant effect. However, my replication and the original model differ in that mine also shows a significant correlation between sine of substrate orientation and mean number of supporting limbs while the original model did not find this to be significant.
 
 
-#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *S. tripartitus*
 
 ```{r Saguinus PercAerial Response}
 #For Saguinus, effect of substrate diameter and substrate orientation on percent aerial phase
@@ -377,7 +412,7 @@ knitr::include_graphics("images/Table2SaguinusAerial.jpg") #Embedding .jpg from 
 
 While the F-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, substrate diameter is significantly correlated with percent aerial phase, while cosine and sine of substrate orientation did not have a significant effect. However, my replication and the original model differ in that mine also shows a significant correlation between relative speed and percent aerial phase while the original model did not find this to be significant.
 
-#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *C. pygmaea*
 
 ```{r Cebuella PercAerial Response}
 #For Cebuella, effect of substrate diameter and substrate orientation on percent aerial phase
@@ -397,10 +432,10 @@ While the F-values, degrees of freedom, and p-values are not exact matches, in b
 
 Rather than the above method, Dunham *et al.* (2020a) used binary logistic mixed-effects models for two models because the residual error for these two models was not normally distributed, meaning that they did not "satisfy assumptions of linear mixed regression analysis" (p. 4). These two models were:
 
-* The effect of substrate diameter and substrate orientation on relative forelimb lead duration for *Cebuella pygmaea*
-* The effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *Cebuella pygmaea*
+* The effect of substrate diameter and substrate orientation on relative forelimb lead duration for *C. pygmaea*
+* The effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *C. pygmaea*
 
-Unfortunately, when running the following code while replicating the linear mixed models for [1] the effect of substrate diameter and substrate orientation on relative forelimb lead duration for *Saguinus tripartitus*, and [2] the effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *Saguinus tripartitus*, the lmer() function repeatedly returned an error despite using the same syntax as for all other models:
+Unfortunately, when running the following code while replicating the linear mixed models for [1] the effect of substrate diameter and substrate orientation on relative forelimb lead duration for *S. tripartitus*, and [2] the effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *S. tripartitus*, the lmer() function repeatedly returned an error despite using the same syntax as for all other models:
 
 [1]
 lmer(relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
@@ -408,7 +443,7 @@ lmer(relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient +
 [2]
 lmer(relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
 
-Specifically, the error stated that the number of levels of each grouping factor must be < number of observations. Given that (1|MovClip) as a random effect did not return this error for any other model created using this method, I was initially unsure what the continued cause of this error is. I decided to look at the number of levels of the grouping factor (MovClip) and the number of observations for each respective response variable ([1] relFLldMS, and [2] relHLldMS) for *Saguinus tripartitus*.
+Specifically, the error stated that the number of levels of each grouping factor must be < number of observations. Given that (1|MovClip) as a random effect did not return this error for any other model created using this method, I was initially unsure what the continued cause of this error is. I decided to look at the number of levels of the grouping factor (MovClip) and the number of observations for each respective response variable ([1] relFLldMS, and [2] relHLldMS) for *S. tripartitus*.
 
 The number of levels of the grouping factor, MovClip, is:
 ```{r}
@@ -423,12 +458,11 @@ The number of usable observations of [2] relHLldMS for *Saguinus tripartitus* is
 (sum(!is.na(saguinus$relHLldMS)))
 ```
 
-If my understanding of the error message is correct, it would seem that the number of dropped NAs for relFLldMS and relHLldMS for *Saguinus tripartitus* may be responsible for the lmer() function not working for attempted models [1] and [2]. I am not certain of this because in total there were 108 observations for *Saguinus tripartitus* (Dunham *et al.*, 2020a; Dunham *et al.*, 2020b), which is also less than the number of levels in MovClip, so I am unsure why this error would not arise in the case of the other models as well unless I am still misunderstanding its meaning.
+If my understanding of the error message is correct, it would seem that the number of dropped NAs for relFLldMS and relHLldMS for *S. tripartitus* may be responsible for the lmer() function not working for attempted models [1] and [2]. I am not certain of this because in total there were 108 observations for *S. tripartitus* (Dunham *et al.*, 2020a; Dunham *et al.*, 2020b), which is also less than the number of levels in MovClip, so I am unsure why this error would not arise in the case of the other models as well unless I am misinterpreting its meaning.
 
 For attempted models [1] and [2], I ultimately decided to instead use binary logistic mixed-effects models instead of linear mixed models in case the issue was that the residual error for these two models was not normally distributed, as was the case for the *Cebuella pygmaea* models for these same response variables.
 
-
-#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *S. tripartitus*
 
 ```{r Saguinus relFLldMS Response, warning = FALSE}
 m4s <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
@@ -443,9 +477,9 @@ knitr::include_graphics("images/Table2SaguinusFLLD.jpg") #Embedding .jpg from fo
 
 ```
 
-While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, cosine and sine of substrate orientation each were not significantly correlated with relative forelimb lead duration. However, my replication and the original model differ in that mine does not show a significant correlation between either relative speed or substrate diameter with relative forelimb limb direction while the original model did find these to be significant effects.
+While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, cosine and sine of substrate orientation each were not significantly correlated with relative forelimb lead duration. However, my replication and the original model differ in that mine does not show a significant correlation between either relative speed or substrate diameter with relative forelimb limb duration while the original model did find these to be significant effects.
 
-#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *C. pygmaea*
 
 ```{r Cebuella relFLldMS Response, warning = FALSE}
 m4c <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
@@ -460,11 +494,10 @@ knitr::include_graphics("images/Table2CebuellaFLLD.jpg") #Embedding .jpg from fo
 
 ```
 
-While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, there is no signficant effect of relative speed, substrate diameter, cosine of substrate orientation, or sine of substrate orientation on relative forelimb lead duration. 
+While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, there is no significant effect of relative speed, substrate diameter, cosine of substrate orientation, or sine of substrate orientation on relative forelimb lead duration. 
 
-#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *Saguinus tripartitus*
+#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *S. tripartitus*
 ```{r Saguinus relHLldMS Response, warning = FALSE}
-#For Saguinus, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
 m5s <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
        family = "binomial", data = saguinus)
 (summary(m5s))
@@ -477,13 +510,11 @@ knitr::include_graphics("images/Table2SaguinusHLLD.jpg") #Embedding .jpg from fo
 
 ```
 
-While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, sine of substrate orientation was not significantly correlated with relative hindlimb lead duration. However, my replication and the original model differ in that mine does not show a significant correlation of relative speed, substrate diameter, and cosine of substrate orientation with relative hindlimb limb direction while the original model did find these to be significant effects.
+While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, sine of substrate orientation was not significantly correlated with relative hindlimb lead duration. However, my replication and the original model differ in that mine does not show a significant correlation of relative speed, substrate diameter, and cosine of substrate orientation with relative hindlimb limb duration while the original model did find these to be significant effects.
 
-#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *Cebuella pygmaea*
+#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *C. pygmaea*
 
 ```{r Cebuella relHLldMS Response, warning = FALSE}
-#For Cebuella, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
-
 m5c <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
        family = "binomial", data = cebuella)
 (summary(m5c))
@@ -496,15 +527,15 @@ knitr::include_graphics("images/Table2CebuellaHLLD.jpg") #Embedding .jpg from fo
 
 ```
 
-While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, there is no signficant effect of relative speed, substrate diameter, cosine of substrate orientation, or sine of substrate orientation on relative hindlimb lead duration. 
+While the z-values, degrees of freedom, and p-values are not exact matches, in both my replication and the original model, there is no significant effect of relative speed, substrate diameter, cosine of substrate orientation, or sine of substrate orientation on relative hindlimb lead duration. 
 
 ## Visualization
 
-For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *Saguinus tripartitus* and *Cebuella pygmaea*.
+For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *S. tripartitus* and *C. pygmaea*.
 
 First, I will create and print the plot for each kinematic variable independently for closer comparison with its Dunham *et al.* (2020a) Figure 3 counterpart.
 
-#### Effect of relative speed on **mean duty factor** for *Saguinus tripartitus* and *Cebuella pygmaea*
+#### Effect of relative speed on **mean duty factor** for *S. tripartitus* and *C. pygmaea*
 
 ```{r relSpeed ~ Meandf, warning = FALSE}
 p1 <- ggplot(data = d, aes(x = relSpeed, y = Meandf), color = Genus) +
@@ -528,14 +559,15 @@ p1 <- ggplot(data = d, aes(x = relSpeed, y = Meandf), color = Genus) +
 ```
 
 From Dunham *et al.* (2020a) Figure 3:
+
 ```{r echo = FALSE, width = "1200px"}
 knitr::include_graphics("images/Figure3MeanDF.jpg") #Embedding .jpg from folder in repo
 ```
 
-In my replication, the *Cebuella pygmaea* trend exhibits a higher mean duty factor than *Saguinus tripartitus* at any given relative speed. The regression slopes for both species look approximately equal. However, in the original figure, the regression line for *Saguinus tripartitus* is much steeper than in my plot and intersects with the *Cebuella pygmaea* regression line at around a relative speed of 3. My plot appears to be much less populated with points representing unique observations, likely due to the high quantity of dropped NAs from relSpeed and Meandf and/or observations that are missing from the published version of the dataset.
+In my replication, the *Cebuella pygmaea* trend exhibits a higher mean duty factor than *Saguinus tripartitus* at any given relative speed. The regression slopes for both species look approximately equal. However, in the original figure, the regression line for *S. tripartitus* is much steeper than in my plot and intersects with the *C. pygmaea* regression line at around a relative speed of 3. My plot appears to be much less populated with points representing unique observations, likely due to the high quantity of dropped NAs from relSpeed and Meandf and/or observations that are missing from the published version of the dataset.
 
 
-#### Effect of relative speed on **mean number of supporting limbs** for *Saguinus tripartitus* and *Cebuella pygmaea*
+#### Effect of relative speed on **mean number of supporting limbs** for *S. tripartitus* and *C. pygmaea*
 
 ```{r relSpeed ~ MeanNSL, warning = FALSE}
 p2 <- ggplot(data = d, aes(x = relSpeed, y = MeanNSL), color = Genus) +
@@ -555,13 +587,14 @@ p2 <- ggplot(data = d, aes(x = relSpeed, y = MeanNSL), color = Genus) +
 ```
 
 From Dunham *et al.* (2020a) Figure 3:
+
 ```{r echo = FALSE, width = "1200px"}
 knitr::include_graphics("images/Figure3MeanNSL.jpg") #Embedding .jpg from folder in repo
 ```
 
-In both my replication and the original figure, *Cebuella pygmaea* appears to have a higher mean number of supporting limbs than *Saguinus tripartitus* at any given relative speed and the regression slopes for both species look approximately equal. However, in the original figure, the regression lines for both species appear steeper than in my plot. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and MeanNSL and/or observations that are missing from the published version of the dataset.
+In both my replication and the original figure, *C. pygmaea* appears to have a higher mean number of supporting limbs than *S. tripartitus* at any given relative speed and the regression slopes for both species look approximately equal. However, in the original figure, the regression lines for both species appear steeper than in my plot. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and MeanNSL and/or observations that are missing from the published version of the dataset.
 
-#### Effect of relative speed on **relative forelimb lead duration** for *Saguinus tripartitus* and *Cebuella pygmaea*
+#### Effect of relative speed on **relative forelimb lead duration** for *S. tripartitus* and *C. pygmaea*
 
 ```{r relSpeed ~ relFLldMS, warning = FALSE}
 p3 <- ggplot(data = d, aes(x = relSpeed, y = relFLldMS), color = Genus) +
@@ -580,15 +613,15 @@ p3 <- ggplot(data = d, aes(x = relSpeed, y = relFLldMS), color = Genus) +
 (p3)
 ```
 
-
 From Dunham *et al.* (2020a) Figure 3:
+
 ```{r echo = FALSE, width = "1200px"}
 knitr::include_graphics("images/Figure3FLLD.jpg") #Embedding .jpg from folder in repo
 ```
 
-My replication and the original figure look starkly different. In my replication, the regression line for *Cebuella pygmaea* shows a steep slope for the negative relationship between relative forelimb lead duration and relative speed, while the regression line for *Saguinus tripartitus* shows a nearly horizontal slope, suggesting relative forelimb lead duration is fairly constant across relative speeds. This is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relFLldMS and/or observations that are missing from the published version of the dataset.
+My replication and the original figure look starkly different. In my replication, the regression line for *C. pygmaea* shows a steep slope for the negative relationship between relative forelimb lead duration and relative speed, while the regression line for *S. tripartitus* shows a nearly horizontal slope, suggesting relative forelimb lead duration is fairly constant across relative speeds. This is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relFLldMS and/or observations that are missing from the published version of the dataset.
 
-#### Effect of relative speed on **relative hindlimb lead duration** for *Saguinus tripartitus* and *Cebuella pygmaea*
+#### Effect of relative speed on **relative hindlimb lead duration** for *S. tripartitus* and *C. pygmaea*
 
 ```{r relSpeed ~ HLldMS, warning = FALSE}
 p4 <- ggplot(data = d, aes(x = relSpeed, y = relHLldMS), color = Genus) +
@@ -608,14 +641,14 @@ p4 <- ggplot(data = d, aes(x = relSpeed, y = relHLldMS), color = Genus) +
 ```
 
 From Dunham *et al.* (2020a) Figure 3:
+
 ```{r echo = FALSE, width = "1200px"}
 knitr::include_graphics("images/Figure3HLLD.jpg") #Embedding .jpg from folder in repo
 ```
 
-As with the relFLldMS ~ relSpeed plot, my replication and the original figure look starkly different. In my replication, the regression line for *Cebuella pygmaea* shows a steep slope for the negative relationship between relative hindlimb lead duration and relative speed, while the regression line ofr *Saguinus tripartitus* shows a nearly horizontal slope, suggesting relative hindlimb lead duration is fairly constant across relative speeds. Same as with the relFLldMS ~ relSpeed plot, this is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relHLldMS and/or observations that are missing from the published version of the dataset. 
+As with the relFLldMS ~ relSpeed plot, my replication and the original figure look starkly different. In my replication, the regression line for *C. pygmaea* shows a steep slope for the negative relationship between relative hindlimb lead duration and relative speed, while the regression line ofr *S. tripartitus* shows a nearly horizontal slope, suggesting relative hindlimb lead duration is fairly constant across relative speeds. Same as with the relFLldMS ~ relSpeed plot, this is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relHLldMS and/or observations that are missing from the published version of the dataset. 
 
-
-#### Effect of relative speed on **percent aerial phase** for *Saguinus tripartitus* and *Cebuella pygmaea*
+#### Effect of relative speed on **percent aerial phase** for *S. tripartitus* and *C. pygmaea*
 
 ```{r relSpeed ~ PercAerial, warning = FALSE}
 p5 <- ggplot(data = d, aes(x = relSpeed, y = PercAerial, color = Genus)) +
@@ -636,20 +669,25 @@ p5 <- ggplot(data = d, aes(x = relSpeed, y = PercAerial, color = Genus)) +
 ```
 
 From Dunham *et al.* (2020a) Figure 3:
+
 ```{r echo = FALSE, width = "1200px"}
 knitr::include_graphics("images/Figure3Aerial.jpg") #Embedding .jpg from folder in repo
 ```
 
-Out of all of the plots I attempted to replicate for Dunham *et al.* (2020a) Figure 3, this plot was arguably the least successful. In the original figure, both *Saguinus tripartitus* and *Cebuella pygmaea* show a positive relationship between relative speed and percent aerial phase, with the *Cebuella pygmaea* trend exhibiting a higher percent aerial phase than *Saguinus tripartitus* at any given relative speed. In contrast, the points on my plot are distributed very differently and the regression lines have very different slopes than those in the original figure. Specifically, while the *Cebuella pygmaea* line shows a slight positive relationship, the *Saguinus tripartitus* line has a nearly horizontal slope. As with all of the previous regression plots, my verison of the PercAerial ~ relSpeed plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and PercAerial and/or observations that are missing from the published version of the dataset. 
+Out of all of the plots I attempted to replicate for Dunham *et al.* (2020a) Figure 3, this plot was arguably the least successful. In the original figure, both *S. tripartitus* and *C. pygmaea* show a positive relationship between relative speed and percent aerial phase, with the *C. pygmaea* trend exhibiting a higher percent aerial phase than *S. tripartitus* at any given relative speed. In contrast, the points on my plot are distributed very differently and the regression lines have very different slopes than those in the original figure. Specifically, while the *C. pygmaea* line shows a slight positive relationship, the *S. tripartitus* line has a nearly horizontal slope. As with all of the previous regression plots, my verison of the PercAerial ~ relSpeed plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and PercAerial and/or observations that are missing from the published version of the dataset. 
 
 #### Full replication of Figure 3:
 
-```{r Figure 3 Replication, echo = FALSE, warning = FALSE}
+```{r, warning = FALSE}
 #Assembling Fig 3
 p1andp2 <- plot_grid(p1, p2, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
 p3andp4 <- plot_grid(p3, p4, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
 p5andNULL <- plot_grid(p5, NULL, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
+#Printing Fig 3
+```
 
+```{r Figure 3 Replication, echo = FALSE, warning = FALSE}
+#Printing Fig 3
 print(p1andp2)
 print(p3andp4)
 print(p5andNULL)
@@ -658,21 +696,22 @@ print(p5andNULL)
 Here is the Dunham *et al.* (2020a) full Figure 3 for comparison (p. 7):
 
 ```{r echo = FALSE, width = "800px"}
-
 knitr::include_graphics("images/Figure3.jpg") #Embedding .jpg from folder in repo
 ```
 
 ## Summary/Discussion
 
-My descriptive statistics replication was relatively successful. The number of strides for different substrate orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea* in my table exactly matches that of Dunham *et al.* (2020a) Table 1. Still, the number of strides for different substrate diameter categories in my replication did not match Dunham *et al.* (2020a) Table 1. Despite following the definitions outlined by the author, this may be due to a discrepancy between how I assigned these substrate diameter categories and how they were assigned by Dunham *et al*. (2020a).
+My descriptive statistics replication was relatively successful. The number of strides for different substrate orientation categories in free-ranging *S. tripartitus* and *C. pygmaea* in my table exactly matches that of Dunham *et al.* (2020a) Table 1. Still, the number of strides for different substrate diameter categories in my replication did not match Dunham *et al.* (2020a) Table 1. Despite following the definitions outlined by the author, this may be due to a discrepancy between how I assigned these substrate diameter categories and how they were assigned by Dunham *et al*. (2020a).
 
 For the inferential statistics component of this assignment, my linear mixed models and binary logistic mixed-effects models were relatively successful in replicating the results summarized in Dunham *et al.* (2020a) Table 2. While the F-values (or Z-values for the binary mixed-effects models), degrees of freedom, and p-values were not exact matches, my replication found many of the same statistically significant correlations between a given kinematic variable and relative speed, substrate diameter, and/or substrate orientation. However, my replication was far from a perfect match, with various instances of a statistically significant effect being found where none had been in the original model, or a lack of statistical significance was found where a significant effect was found in the original model. These discrepancies may be due to data that was used by Dunham *et al.* (2020a) in their analyses but was not included in the published dataset (2020b).
 
-Furthermore, because the raw angle measurement for substrate orientation is not a variable in the dataset, but the sine and cosine transformation outlined in the article are, I have made the assumption throughout this exercise that for all variables for which transformations were described, the values in the dataset have undergone said transformations. I cannot confirm this due to the absence of separately specified columns of raw measurements and transformations of the variables in the published dataset.
+Furthermore, because the raw angle measurement for substrate orientation is not a variable in the dataset, but the sine and cosine transformation outlined in the article are, I have made the assumption throughout this exercise that for all variables for which transformations were described, the values in the dataset have already undergone said transformations. I cannot confirm this due to the absence of separately specified columns of raw measurements and transformations of the variables in the published dataset.
  
 Finally, for the visualization component of this assignment, my replication did not successfully match Dunham *et al.* (2020a) Figure 3. Across the plots of each kinematic variable regressed against relative speed, I noticed that my plots were far less populated with data points than in the original figure. Clearly, differences in my linear regression line compared to the original figure can be attributed to a difference in data points being used to fit this line. This difference in data points may have been due to the large number of NAs that were dropped from each variable. Potentially, some of these NA entries in the published dataset represent data that is missing from their dataset used by the authors in their analyses and visualizations. In addition to this, it is possible that the kinematic variables were transformed in some additional way by Dunham *et al* (2020a) that is not stated along with the transformations outlined in the article. 
 
 ## References
+
+Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2019). Effects of substrate and phylogeny on quadrupedal gait in free-ranging platyrrhines. *Am J Phys Anthropol*, *170*, 565–578. [DOI:10.1002](https://doi.org/10.1002/ajpa.23942)
 
 Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2020a). Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation. *J Exp Biol 15*, *223*(12), jeb217562. [DOI:10.1242](https://doi.org/10.1242/jeb.217562)
 
