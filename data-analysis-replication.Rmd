@@ -9,7 +9,10 @@ output:
 ## Packages Used
 {tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{cowplot|,{lme4},{lmerTest},{Matrix}
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.path = "images/") #Output folder for all of my figures
+
 library(tidyverse)
 library(dplyr)
 library(mosaic)
@@ -22,12 +25,55 @@ library(kableExtra)
 library(cowplot)
 library(lme4)
 library(lmerTest)
-library(Matrix) #Installed versoin of {Matrix} and {lme4} must be compatible binaries 
+library(Matrix) 
+#NOTE: The installed versions of {Matrix} and {lme4} must be compatible binaries.
+#I resolved this by uninstalling {Matrix}, {lmer4}, and {lmerTest}, and then reinstalling each following the cited *Stack Overflow* page's method:
+
+#oo <- options(repos = "https://cran.r-project.org/")
+#install.packages("Matrix")
+#install.packages("lme4")
+#install.packages("lmerTest")
+#options(oo)
+
+#I am commenting this here as opposed to including the above in my code to avoid having a package installation in my code
 ```
 
-## Introduction
+## Introduction to Dunham *et al.* (2020a)
 
-[Include a brief summary of the paper you are reanalyzing data from (e.g., the overall objective of the paper, the types of data collected and how sampling was done, what the main results were) and lay out what you intend to replicate.]
+
+### Summary
+
+
+### Methods
+
+#### Data Collection
+
+#### Variable Names
+
+#### Analysis
+
+
+### Results
+
+
+### Conclusions
+
+
+## My Project Outline
+
+### Descriptive Statistics
+
+For my descriptive statistics, I will be attempting to replicate Dunham *et al.* (2020a) Table 1, which summarizes the "number of strides for different substrate diameter and orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea*" (p. 4).
+
+### Inferential Statistics
+
+For my inferential statistical analysis, I will be attempting to replicate the linear mixed regression analysis that Dunham *et al.* (2020a) used to evaluate the "effects of substrate
+diameter and substrate orientation on continuous kinematic variables," including relative speed, mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase (p. 4). Dunham *et al.* (2020a) also used binary logistic mixed-effects models for two models because the residual error for these two models was not normally distributed, meaning that they did not "satisfy assumptions of linear mixed regression analysis" (p. 4). Thus, for these models, I will be attempting to replicate the binary logistic mixed-effects regression anaalysis used by Dunham *et al.* (2020a). 
+
+### Visualization
+
+For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *Saguinus tripartitus* and *Cebuella pygmaea*.
+
 
 ## Exploratory Data Analysis
 
@@ -119,7 +165,7 @@ but forelimb stance periods were staggered), and gallops (both forelimb and hind
 Here, I am first adding two new columns to my dataset, **FL** and **HL**, to store whether forelimb touchdowns and hindlimb touchdowns, respectively, were simultaneous ("the interval between the trailing and leading limb mid-support was ≤10% of total limb pair contact duration") or staggered ("the interval between the trailing and leading limb mid-support was
 ≥10% of total limb pair contact duration") for each observation (Dunham *et al.*, 2020a, p. 3). Following from this, I am adding a new variable, **GaitType2**, which categorizes each observation as a symmetrical gait, a bound, a half-bound, or a gallop (p. 3).
 
-```{r}
+```{r Gait Type}
 d <- d |> #Categorizing forelimb stance periods as nearly simultaneous or staggered based on relative forelimb lead duration, relFLldMS
   mutate(FL = case_when(
     relFLldMS <= 0.1 ~ "simultaneous",
@@ -137,6 +183,15 @@ d <- d |> mutate(GaitType2 = case_when( #Categorizing gait types based on both f
   FL == "staggered" & HL == "simultaneous" ~ "Half-bound",
   FL == "staggered" & HL == "staggered" ~ "Gallop"
 ))
+
+gait <- table(d$Binomial,d$GaitType2)
+gaittable <- kable(gait, caption = "Number of strides for different gait types in free-ranging <i>Saguinus tripartitus</i> and <i>Cebuella pygmaea</i>")|> #Adding a title
+        add_header_above(c(" " = 1, "Gait Type" = 4))|> #Adding subtitles over the specified groups of columns
+        kable_styling(full_width = FALSE) |> #Fixing the spacing of the columns, which were crowded together without this specification
+        row_spec(0, extra_css = "margin-bottom: 10px;") |> #Fixing the spacing of the rows, which were crowded together without this specification
+        column_spec(1, italic = TRUE) #Italicizing the scientific names pulled from the variable Binomial
+
+(gaittable)
 ```
 
 ## Descriptive Statistics
@@ -144,14 +199,14 @@ d <- d |> mutate(GaitType2 = case_when( #Categorizing gait types based on both f
 Here, I attempting to replicate **Table 1**, which summarizes the number of strides (n=209) for different substrate diameter (small, medium, large) and orientation categories (decline, horizontal, incline) in free-ranging *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101) (p. 4). Dunham *et al*. (2020a) clarify that each observation in the dataset represents one stride (n = 209) (p. 3).
 
 ```{r}
-tab1a <- (table(d$Binomial,d$relBrnchDiamCategories)) #Creating a table summarizing the frequency of each substrate diameter category across observations of Saguinus and Cebuella strides
+tab1a <- table(d$Binomial,d$relBrnchDiamCategories) #Creating a table summarizing the frequency of each substrate diameter category across observations of Saguinus and Cebuella strides
 ```
 
 ```{r}
-tab1b <- (table(d$Binomial,d$SbstOrientCategories)) #Creating a table summarizing the frequency of each substrate orientation category across observations of Saguinus and Cebuella strides
+tab1b <- table(d$Binomial,d$SbstOrientCategories) #Creating a table summarizing the frequency of each substrate orientation category across observations of Saguinus and Cebuella strides
 ```
 
-```{r}
+```{r Table 1 Replication}
 tab1 <- cbind(tab1a,tab1b) #Combining the above two tables to more accurately replicate Table 1
 tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrate diameter and orientation categories in free-ranging <i>Saguinus tripartitus</i> and <i>Cebuella pygmaea</i>")|> #Adding a title
         add_header_above(c(" " = 1, "Substrate diameter" = 3, "Substrate orientation" = 3))|> #Adding subtitles over the specified groups of columns
@@ -162,7 +217,7 @@ tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrat
 ```
 Here is Table 1 for comparison (Dunham *et al*., 2020a, p.4):
 
-```{r echo = FALSE, width = "###px"}
+```{r echo = FALSE, width = "800px"}
 knitr::include_graphics("images/Table1.jpg") #Embedding .jpg from folder in repo
 ```
 
@@ -173,88 +228,275 @@ My values for the number of strides observed for each substrate orientation cate
 
 ### Linear Mixed Models
 
-Dunham *et al.* (2020a) state that they used the packages {lme4} and {lmerTest} to carry out their linear mixed models in R, so I will be using this method as well. 
+Dunham *et al.* (2020a) ran linear mixed model regressions in order to evaluate the effects of substrate diameter and orientation on various kinematic variables of the gait of *Saguinus tripartitus* and *Cebuella pygmaea* individuals, such as:
 
-+++random_effects+++
+* Relative speed
+* Mean duty factor
+* Mean number of supporting limbs
+* Relative forelimb lead duration
+* Relative hindlimb lead duration 
+* Percent aerial phase. 
 
-```{r}
+Raw measures of substrate orientation angle were transformed into [1] the sine of the substrate orientation angle, and [2] the cosine of the substrate orientation angle. The sine value allowed the authors to differentiate declines and inclines in addition to horizontal substrates, while the cosine value allowed the authors to more generally look at horizontal substrates and oblique (declined or inclined) substrates.
+
+The packages {lme4} and {lmerTest} were used to carry out their linear mixed models in R in order to utilize Sattherthwaite approximations to adjust degrees of freedom (Dunham *et al.*, 2020a). 
+
+In {lme4}, the function lmer() is used to carry out a linear mixed model regression. The general syntax of the function lmer() is:
+
+lmer(response_variable ~ fixed_effects + (random_effects | group_variable))
+
+For example, if I am looking to evaluate the effect of substrate diameter and substrate orientation on mean duty factor...
+
+* Mean duty factor (MeandF) is my response variable
+* My fixed effects are substrate diameter (relBrnchDiamNsTl) and substrate orientation (Sin_SbstOrient and Cos_SbstOrient)
+* Dunham *et al.* (2020a) also included relative speed (relSpeed) as a covariate for each kinematic variables to account for the potential effects of speed (p. 4), so this would be added to the fixed effects argument. 
+* Dunham *et al.* (2020a) specified that "individual primate was nested within video clip as a random factor (intercept) in each model" because some video clips (MovClip) contained multiple
+individuals (p. 4). 
+
+All together, this code would look like:
+
+lmer(Meandf ~ relSpeed + relBrnchDiamNsT1 + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip))
+
+
+#### Effect of substrate diameter and substrate orientation on relative speed for *Saguinus tripartitus*
+
+```{r Saguinus relSpeed Response}
+d$MovClip <- as.factor(d$MovClip)
+
 saguinus <- d |> filter(Genus == "Saguinus")
-cebuella <- d |> filter(Genus == "Cebuella")
 
-#For Saguinus, effect of substrate diameter and substrate orientation on relative speed
 m1s <- lmer(relSpeed ~ relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
 (anova(m1s))
 ```
 
-```{r}
-#For Cebuella, effect of substrate diameter and substrate orientation on relative speed
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusRelSpeed.jpg") #Embedding .jpg from folder in repo
+```
+
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **relative speed** for *Cebuella pygmaea*
+
+```{r Cebuella relSpeed response}
+cebuella <- d |> filter(Genus == "Cebuella")
+
 m1c <- lmer(relSpeed ~ relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
 (anova(m1c))
 ```
 
-```{r}
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaRelSpeed.jpg") #Embedding .jpg from folder in repo
+```
+
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *Saguinus tripartitus*
+
+```{r Saguinus Meandf Response}
 #For Saguinus, effect of substrate diameter and substrate orientation on mean duty factor
 m2s <- lmer(Meandf ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
 (anova(m2s))
 ```
 
-```{r}
-#For Cebuella, effect of substrate diameter and substrate orientation on mean duty factor
-m2c <- lmer(Meandf ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
-(anova(m2s))
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusMeanDF.jpg") #Embedding .jpg from folder in repo
 ```
 
-```{r}
-#For Saguinus, effect of substrate diameter and substrate orientation on mean number of supporting limbs
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **mean duty factor** for *Cebuella pygmaea*
+
+```{r Cebuella Meandf Response}
+#For Cebuella, effect of substrate diameter and substrate orientation on mean duty factor
+m2c <- lmer(Meandf ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
+(anova(m2c))
+```
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaMeanDF.jpg") #Embedding .jpg from folder in repo
+
+```
+
+
++++ADD INTERPRETATION+++
+
+#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *Saguinus tripartitus*
+
+```{r Saguinus MeanNSL Response}
 m3s <- lmer(MeanNSL ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
 (anova(m3s))
 ```
 
-```{r}
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusMeanNSL.jpg") #Embedding .jpg from folder in repo
+```
+
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **mean number of supporting limbs** for *Cebuella pygmaea*
+
+```{r Cebuella MeanNSL Response}
 #For Cebuella, effect of substrate diameter and substrate orientation on mean number of supporting limbs
 m3c <- lmer(MeanNSL ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
 (anova(m3c))
 ```
 
-```{r}
-#For Saguinus, effect of substrate diameter and substrate orientation on percent aerial phase
-m6s <- lmer(PercAerial ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
-anova(m6s)
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaMeanNSL.jpg") #Embedding .jpg from folder in repo
+
 ```
 
-```{r}
++++ADD INTERPRETATION+++
+
+#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *Saguinus tripartitus*
+
+```{r Saguinus PercAerial Response}
+#For Saguinus, effect of substrate diameter and substrate orientation on percent aerial phase
+m6s <- lmer(PercAerial ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+(anova(m6s))
+```
+
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusAerial.jpg") #Embedding .jpg from folder in repo
+
+```
+
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **percent aerial phase** for *Cebuella pygmaea*
+
+```{r Cebuella PercAerial Response}
 #For Cebuella, effect of substrate diameter and substrate orientation on percent aerial phase
 m6c <- lmer(PercAerial ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
-anova(m6c)
+(anova(m6c))
 ```
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaAerial.jpg") #Embedding .jpg from folder in repo
+```
+
++++ADD INTERPRETATION+++
+
 
 ### Binary logistic mixed-effects models
 
-```{r, warning = FALSE}
-#For Saguinus, effect of substrate diameter and substrate orientation on relative forelimb lead duration
+Rather than the above method, Dunham *et al.* (2020a) used binary logistic mixed-effects models for two models because the residual error for these two models was not normally distributed, meaning that they did not "satisfy assumptions of linear mixed regression analysis" (p. 4). These two models were:
 
+* The effect of substrate diameter and substrate orientation on relative forelimb lead duration for *Cebuella pygmaea*
+* The effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *Cebuella pygmaea*
+
+Unfortunately, when running the following code while replicating the linear mixed models for [1] the effect of substrate diameter and substrate orientation on relative forelimb lead duration for *Saguinus tripartitus*, and [2] the effect of substrate diameter and substrate orientation on relative hindlimb lead duration for *Saguinus tripartitus*, the lmer() function repeatedly returned an error despite using the same syntax as for all other models:
+
+[1]
+lmer(relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+
+[2]
+lmer(relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+
+Specifically, the error stated that the number of levels of each grouping factor must be < number of observations. Given that (1|MovClip) as a random effect did not return this error for any other model created using this method, I was initially unsure what the continued cause of this error is. I decided to look at the number of levels of the grouping factor (MovClip) and the number of observations for each respective response variable ([1] relFLldMS, and [2] relHLldMS) for *Saguinus tripartitus*.
+
+The number of levels of the grouping factor, MovClip, is:
+```{r}
+(length(levels(saguinus$MovClip)))
+```
+The number of usable observations of [1] relFLldMS for *Saguinus tripartitus* is:
+```{r}
+(sum(!is.na(saguinus$relFLldMS)))
+```
+The number of usable observations of [2] relHLldMS for *Saguinus tripartitus* is:
+```{r}
+(sum(!is.na(saguinus$relHLldMS)))
+```
+
+If my understanding of the error message is correct, it would seem that the number of dropped NAs for relFLldMS and relHLldMS for *Saguinus tripartitus* may be responsible for the lmer() function not working for attempted models [1] and [2]. I am not certain of this because in total there were 108 observations for *Saguinus tripartitus* (Dunham *et al.*, 2020a; Dunham *et al.*, 2020b), which is also less than the number of levels in MovClip, so I am unsure why this error would not arise in the case of the other models as well unless I am still misunderstanding its meaning.
+
+For attempted models [1] and [2], I ultimately decided to instead use binary logistic mixed-effects models instead of linear mixed models in case the issue was that the residual error for these two models was not normally distributed, as was the case for the *Cebuella pygmaea* models for these same response variables.
+
+
+#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *Saguinus tripartitus*
+
+```{r Saguinus relFLldMS Response, warning = FALSE}
 m4s <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
        family = "binomial", data = saguinus)
 (summary(m4s))
 ```
 
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
 
-```{r, warning = FALSE}
-#For Cebuella, effect of substrate diameter and substrate orientation on relative forelimb lead duration
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusFLLD.jpg") #Embedding .jpg from folder in repo
 
+```
+
+
++++ADD INTERPRETATION+++
+
+#### Effect of substrate diameter and substrate orientation on **relative forelimb lead duration** for *Cebuella pygmaea*
+
+```{r Cebuella relFLldMS Response, warning = FALSE}
 m4c <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
        family = "binomial", data = cebuella)
 (summary(m4c))
 ```
 
-```{r, warning = FALSE}
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaFLLD.jpg") #Embedding .jpg from folder in repo
+
+```
+
++++ADD INTERPRETATION+++
+
+
+#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *Saguinus tripartitus*
+```{r Saguinus relHLldMS Response, warning = FALSE}
 #For Saguinus, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
 m5s <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
        family = "binomial", data = saguinus)
 (summary(m5s))
 ```
 
-```{r, warning = FALSE}
+
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2SaguinusHLLD.jpg") #Embedding .jpg from folder in repo
+
+```
+
+
++++ADD INTERPRETATION+++
+
+#### Effect of substrate diameter and substrate orientation on **relative hindlimb lead duration** for *Cebuella pygmaea*
+
+```{r Cebuella relHLldMS Response, warning = FALSE}
 #For Cebuella, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
 
 m5c <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
@@ -262,16 +504,32 @@ m5c <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + 
 (summary(m5c))
 ```
 
+Highlighted below for comparison are the relevant results presented in Dunham et al. (2020a) Table 2 (p. 6):
+
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Table2CebuellaHLLD.jpg") #Embedding .jpg from folder in repo
+
+```
+
+
++++ADD INTERPRETATION+++
+
+
 ## Visualization
 
-```{r, warning = FALSE}
-#For Saguinus, effect of substrate diameter on relative speed
+For my visualization, I will be attempting to replicate Dunham *et al.* (2020a) Figure 3 (p. 7), which consists of plots of various kinematic variables (mean duty factor, mean number of supporting limbs, relative forelimb lead duration, relative hindlimb lead duration, and percent aerial phase) regressed against relative speed for *Saguinus tripartitus* and *Cebuella pygmaea*.
 
+First, I will create and print the plot for each kinematic variable independently for closer comparison with its Dunham *et al.* (2020a) Figure 3 counterpart.
+
+
+#### Effect of relative speed on **mean duty factor** for *Saguinus tripartitus* and *Cebuella pygmaea*
+
+```{r relSpeed ~ Meandf, warning = FALSE}
 p1 <- ggplot(data = d, aes(x = relSpeed, y = Meandf), color = Genus) +
   geom_point(aes(fill = Genus), alpha = 0.5) +
   geom_smooth(method="lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
-  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
-  scale_fill_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) +
+  scale_color_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) +
   labs(y = "Mean DF", x = element_blank()) + #Specifying axis labels
   ylim(0,1) + #Setting the y-axis range
   xlim(0,5) + #Setting the x-axis range
@@ -287,11 +545,22 @@ p1 <- ggplot(data = d, aes(x = relSpeed, y = Meandf), color = Genus) +
 
 ```
 
-```{r, warning = FALSE}
+From Dunham *et al.* (2020a) Figure 3:
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Figure3MeanDF.jpg") #Embedding .jpg from folder in repo
+```
+
+In my replication, the *Cebuella pygmaea* trend exhibits a higher mean duty factor than *Saguinus tripartitus* at any given relative speed. The regression slopes for both species look approximately equal. However, in the original figure, the regression line for *Saguinus tripartitus* is much steeper than in my plot and intersects with the *Cebuella pygmaea* regression line at around a relative speed of 3. My plot appears to be much less populated with points representing unique observations, likely due to the high quantity of dropped NAs from relSpeed and Meandf and/or observations that are missing from the published version of the dataset.
+
+
+#### Effect of relative speed on **mean number of supporting limbs** for *Saguinus tripartitus* and *Cebuella pygmaea*
+
+```{r relSpeed ~ MeanNSL, warning = FALSE}
 p2 <- ggplot(data = d, aes(x = relSpeed, y = MeanNSL), color = Genus) +
-  geom_point(aes(color = Genus), alpha = 0.5) + 
-  geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
-  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  geom_point(aes(fill = Genus), alpha = 0.5) + 
+  geom_smooth(method = "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) +
   labs(y = "Mean NSL", x = element_blank()) + #Specifying axis labels
   ylim(0,4) + #Setting the y-axis range
   xlim(0,5) + #Setting the x-axis range
@@ -303,11 +572,21 @@ p2 <- ggplot(data = d, aes(x = relSpeed, y = MeanNSL), color = Genus) +
 (p2)
 ```
 
-```{r, warning = FALSE}
+From Dunham *et al.* (2020a) Figure 3:
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Figure3MeanNSL.jpg") #Embedding .jpg from folder in repo
+```
+
+In both my replication and the original figure, *Cebuella pygmaea* appears to have a higher mean number of supporting limbs than *Saguinus tripartitus* at any given relative speed and the regression slopes for both species look approximately equal. However, in the original figure, the regression lines for both species appear steeper than in my plot. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and MeanNSL and/or observations that are missing from the published version of the dataset.
+
+#### Effect of relative speed on **relative forelimb lead duration** for *Saguinus tripartitus* and *Cebuella pygmaea*
+
+```{r relSpeed ~ relFLldMS, warning = FALSE}
 p3 <- ggplot(data = d, aes(x = relSpeed, y = relFLldMS), color = Genus) +
-  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_point(aes(fill = Genus), alpha = 0.5) + 
   geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
   scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) +
   labs(y = "Relative FLLD", x = element_blank()) + #Specifying axis labels
   ylim(-0.2,0.6) + #Setting the y-axis range
   xlim(0,5) + #Setting the x-axis range
@@ -319,11 +598,22 @@ p3 <- ggplot(data = d, aes(x = relSpeed, y = relFLldMS), color = Genus) +
 (p3)
 ```
 
-```{r, warning = FALSE}
+
+From Dunham *et al.* (2020a) Figure 3:
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Figure3FLLD.jpg") #Embedding .jpg from folder in repo
+```
+
+My replication and the original figure look starkly different. In my replication, the regression line for *Cebuella pygmaea* shows a steep slope for the negative relationship between relative forelimb lead duration and relative speed, while the regression line for *Saguinus tripartitus* shows a nearly horizontal slope, suggesting relative forelimb lead duration is fairly constant across relative speeds. This is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relFLldMS and/or observations that are missing from the published version of the dataset.
+
+#### Effect of relative speed on **relative hindlimb lead duration** for *Saguinus tripartitus* and *Cebuella pygmaea*
+
+```{r relSpeed ~ HLldMS, warning = FALSE}
 p4 <- ggplot(data = d, aes(x = relSpeed, y = relHLldMS), color = Genus) +
-  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_point(aes(fill = Genus), alpha = 0.5) + 
   geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
   scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) +
   labs(y = "Relative HLLD", x = "Relative speed") + #Specifying axis labels
   ylim(-0.2,0.6) + #Setting the y-axis range
   xlim(0,5) + #Setting the x-axis range
@@ -335,11 +625,22 @@ p4 <- ggplot(data = d, aes(x = relSpeed, y = relHLldMS), color = Genus) +
 (p4)
 ```
 
-```{r, warning = FALSE}
+From Dunham *et al.* (2020a) Figure 3:
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Figure3HLLD.jpg") #Embedding .jpg from folder in repo
+```
+
+As with the relFLldMS ~ relSpeed plot, my replication and the original figure look starkly different. In my replication, the regression line for *Cebuella pygmaea* shows a steep slope for the negative relationship between relative hindlimb lead duration and relative speed, while the regression line ofr *Saguinus tripartitus* shows a nearly horizontal slope, suggesting relative hindlimb lead duration is fairly constant across relative speeds. Same as with the relFLldMS ~ relSpeed plot, this is exactly opposite the trends shown in the original figure. Again, my plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and relHLldMS and/or observations that are missing from the published version of the dataset. 
+
+
+#### Effect of relative speed on **percent aerial phase** for *Saguinus tripartitus* and *Cebuella pygmaea*
+
+```{r relSpeed ~ PercAerial, warning = FALSE}
 p5 <- ggplot(data = d, aes(x = relSpeed, y = PercAerial, color = Genus)) +
-  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_point(aes(fill = Genus), alpha = 0.5) + 
   geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
   scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray70", "Cebuella" = "black")) +
   labs(caption = "Fig. 3. Variation in callitrichine asymmetrical gait kinematics (n=209 strides) in relation to relative speed", y = "% Aerial phase", x = "Relative speed") + #Specifying axis labels
   ylim(0,0.6) + #Setting the y-axis range
   xlim(0,5) + #Setting the x-axis range
@@ -352,9 +653,16 @@ p5 <- ggplot(data = d, aes(x = relSpeed, y = PercAerial, color = Genus)) +
 (p5)
 ```
 
-Here is my full replication of Figure 3:
+From Dunham *et al.* (2020a) Figure 3:
+```{r echo = FALSE, width = "1200px"}
+knitr::include_graphics("images/Figure3Aerial.jpg") #Embedding .jpg from folder in repo
+```
 
-```{r, echo = FALSE, warning = FALSE}
+Out of all of the plots I attempted to replicate for Dunham *et al.* (2020a) Figure 3, this plot was arguably the least successful. In the original figure, both *Saguinus tripartitus* and *Cebuella pygmaea* show a positive relationship between relative speed and percent aerial phase, with the *Cebuella pygmaea* trend exhibiting a higher percent aerial phase than *Saguinus tripartitus* at any given relative speed. In contrast, the points on my plot are distributed very differently and the regression lines have very different slopes than those in the original figure. Specifically, while the *Cebuella pygmaea* line shows a slight positive relationship, the *Saguinus tripartitus* line has a nearly horizontal slope. As with all of the previous regression plots, my verison of the PercAerial ~ relSpeed plot appears to be much less populated with points representing observations, likely due to the high quantity of dropped NAs from relSpeed and PercAerial and/or observations that are missing from the published version of the dataset. 
+
+#### Full replication of Figure 3:
+
+```{r Figure 3 Replication, echo = FALSE, warning = FALSE}
 #Assembling Fig 3
 p1andp2 <- plot_grid(p1, p2, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
 p3andp4 <- plot_grid(p3, p4, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
@@ -366,18 +674,26 @@ print(p5andNULL)
 ```
 
 Here is the Dunham *et al.* (2020a) full Figure 3 for comparison (p. 7):
-```{r echo = FALSE, width = "###px"}
+
+```{r echo = FALSE, width = "800px"}
 
 knitr::include_graphics("images/Figure3.jpg") #Embedding .jpg from folder in repo
 ```
 
-
 ## Summary/Discussion
 
-[Narrative section that overviews how successful were you at replicating the analyses and visualizations in the study. What problems did you encounter? Why might you have encountered those problems? What details were lacking from the original study's methods that might have hampered your ability to replicate the authors' results?]
+My descriptive statistics replication was relatively successful. The number of strides for different substrate orientation categories in free-ranging *Saguinus tripartitus* and *Cebuella pygmaea* in my table exactly matches that of Dunham *et al.* (2020a) Table 1. Still, the number of strides for different substrate diameter categories in my replication did not match Dunham *et al.* (2020a) Table 1. Despite following the definitions outlined by the author, this may be due to a discrepancy between how I assigned these substrate diameter categories and how they were assigned by Dunham *et al*. (2020a).
+
++++Inferential statistics+++
+ 
+Finally, for the visualization component of this assignment, my replication did not successfully match Dunham *et al.* (2020a) Figure 3. Across the plots of each kinematic variable regressed against relative speed, I noticed that my plots were far less populated with data points than in the original figure. Clearly, differences in my linear regression line compared to the original figure can be attributed to a difference in data points being used to fit this line. This difference in data points may have been due to the large number of NAs that were dropped from each variable. Potentially, some of these NA entries in the published dataset represent data that is missing from their dataset used by the authors in their analyses and visualizations. In addition to this, it is possible that the kinematic variables were transformed in some additional way by Dunham *et al* (2020a) that is not stated along with the transformations outlined in the article. 
+
+Furthermore, because the raw angle measurement for substrate orientation is not a variable in the dataset, but the sine and cosine transformation outlined in the article are, I have made the assumption throughout this exercise that for all variables for which transformations were described, the values in the dataset have undergone said transformations. I cannot confirm this due to the absence of specified raw measurements and transformations of the variables in the published dataset.
 
 ## References
 
-Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2020a). Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation. *J Exp Biol 15*, *223*(12), jeb217562. https://doi.org/10.1242/jeb.217562
+Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., & Young, J. W. (2020a). Asymmetrical gait kinematics of free-ranging callitrichine primates in response to changes in substrate diameter and orientation. *J Exp Biol 15*, *223*(12), jeb217562. [DOI:10.1242](https://doi.org/10.1242/jeb.217562)
 
-Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., Young, J. W. (2020b). Dunham et al.  "Asymmetrical gait kinematics of free-ranging callitrichines in response to changes in substrate diameter and orientation". *figshare*. Dataset. https://doi.org/10.6084/m9.figshare.11923122.v1
+Dunham, N. T., McNamara, A., Shapiro, L. J., Phelps, T., Young, J. W. (2020b). Dunham et al.  "Asymmetrical gait kinematics of free-ranging callitrichines in response to changes in substrate diameter and orientation". *figshare*. Dataset. [DOI:10.6084](https://doi.org/10.6084/m9.figshare.11923122.v1)
+
+Stack Overflow. (n.d.). Error in initializePtr function: CHOLMOD factor ldeta not provided by package. Retrieved from [Stack Overflow](https://stackoverflow.com/questions/77481539/error-in-initializeptr-function-cholmod-factor-ldeta-not-provided-by-pack)
