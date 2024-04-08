@@ -7,7 +7,7 @@ output:
 ---
 
 ## Packages Used
-{tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{lme4},{lmerTest}
+{tidyverse},{dplyr},{mosaic},{tidylog},{readxl},{ggplot2},{formatR},{knitr},{kableExtra},{cowplot|,{lme4},{lmerTest},{Matrix}
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
@@ -19,8 +19,10 @@ library(ggplot2)
 library(formatR)
 library(knitr)
 library(kableExtra)
+library(cowplot)
 library(lme4)
 library(lmerTest)
+library(Matrix) #Installed versoin of {Matrix} and {lme4} must be compatible binaries 
 ```
 
 ## Introduction
@@ -39,9 +41,33 @@ d <- read_excel(f,sheet = 1, col_names = TRUE)
 (head(d)) #For a view of the first few lines of the data set
 ```
 
+```{r, warning = FALSE}
+#Some variables that should be numeric were read in as character variables, so I needed to correct this
+
+class(d$relBrnchDiamNsTl) #Checking; relBrnchDiamNsTl is already numeric
+class(d$Sin_SbstOrient) #Checking
+d$Sin_SbstOrient <- as.numeric(d$Sin_SbstOrient) #Changing Sin_SbstOrient to numeric
+class(d$Cos_SbstOrient) #Checking
+d$Cos_SbstOrient <- as.numeric(d$Cos_SbstOrient) #Changing Cos_SbstOrient to numeric
+class(d$relSpeed)#Checking; relSpeed is already numeric
+class(d$Meandf)#Checking; Meandf is already numeric
+class(d$MeanNSL) #Checking; MeanNSL is already numeric
+class(d$relFLldMS) #Checking
+d$relFLldMS <- as.numeric(d$relFLldMS) #Changing relFLldMS to numeric
+class(d$relHLldMS) #Checking
+d$relHLldMS <- as.numeric(d$relHLldMS) #Changing relHLldMS to numeric
+class(d$PercAerial) #Checking; PercAerial is already numeric
+class(d$MeanLphsMS) #Checking
+d$MeanLphsMS <- as.numeric(d$MeanLphsMS) #Changing MeanLphsMS to numeric
+class(d$SubstrateDisp) #Checking
+d$SubstrateDisp <- as.numeric(d$SubstrateDisp) #Changing SubstrateDisp to numeric
+```
+
 Various kinematic and substrate variables and were calculated by Dunham *et al*. (2020) from the data available in their published dataset (pp. 3-4). 
 
 The variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (Dunham *et al*., 2020a). Dunham *et al*. (2020a) used these relative branch diameter ratios to group substrate into three size categories: small ("less than half of an individual’s trunk diameter"), medium ("between half and equal to an individual’s trunk diameter"), and large ("greater than an individual’s trunk diameter") (p. 4). Here, I am adding a new variable to my dataset, **relBrnchDiamCategories**, to categorize substrate for each observation as described above.
+
+Here are the levels in **relBrnchDiamCategories**:
 
 ```{r}
 d <- d |> mutate(relBrnchDiamCategories = case_when( #Creating new variable categorizing relative substrate diameter
@@ -56,9 +82,9 @@ d$relBrnchDiamCategories <- as.factor(d$relBrnchDiamCategories) #As factor becau
 
 The variables sine of substrate orientation angle (**Sin_SbstOrient**) and cosine of substrate orientation angle (**Cos_SbstOrient**) are transformations of the raw substrate orientation angle measurement in degrees (Dunham et al., 2020a, p. 4). Dunham *et al*. (2020a) used these to group substrate into three orientation categories: horizontal ("between -30 and 30 deg"), decline ("less than -30 deg"), and incline ("greater than 30 deg") (p. 4). Here, I am adding a new variable to my dataset, **SbstOrientCategories**, to categorize substrate for each observation as described above. The choice to use **Sin_SbstOrient** to calculate orientation angle is because, unlike **Cos_SbstOrient**, it can differentiate declines and inclines (Dunham *et al*., 2020a).
 
+Here are the levels in **SbstOrientCategories**:
 ```{r}
-d$Sin_SbstOrient_Numeric <- as.numeric(d$Sin_SbstOrient) #Changing Sin_SbstOrient to numeric
-d$Angle_SbstOrient <- (asin(d$Sin_SbstOrient_Numeric))*(180/pi) #Converting sin to angle (deg)
+d$Angle_SbstOrient <- (asin(d$Sin_SbstOrient))*(180/pi) #Converting sin to angle (deg)
 
 d <- d |> mutate(SbstOrientCategories = case_when( #Creating new variable categorizing substrate orientation
   Angle_SbstOrient >= -30 & Angle_SbstOrient <= 30 ~ "Horizontal",
@@ -68,17 +94,23 @@ d <- d |> mutate(SbstOrientCategories = case_when( #Creating new variable catego
   ))
 
 d$SbstOrientCategories <- as.factor(d$SbstOrientCategories) #As factor because this is a categorical variable with levels.
+d$SbstOrientCategories <- fct_relevel(d$SbstOrientCategories,"Horizontal","Incline","Decline") #Reordering the levels to later better replicate Table 1
 (levels(d$SbstOrientCategories))
 ```
 
 Because only Genus in included as a column in the published dataset, I decided to add columns both for species (**Species**) and binomial nomenclature (**Binomial**).
 
 ```{r}
+d$Genus <- as.factor(d$Genus)
+
 d <- d |> mutate(Species = case_when( #Creating new variable, Species
   Genus == "Cebuella" ~ "pygmaea",
   Genus == "Saguinus" ~ "tripartitus"
   ))
 d <- d |> mutate(Binomial = paste(Genus, Species, sep = " ")) #Creating new variable, Binomial, by concatenating **Genus** and **Species** using paste()
+
+d$Binomial <- as.factor(d$Binomial)
+d$Binomial <- fct_relevel(d$Binomial,"Saguinus tripartitus","Cebuella pygmaea")
 ```
 
 Dunham *et al*. (2020a) define the variables relative forelimb lead duration (**relFLldMS**) and relative hindlimb lead duration (**relHLldMS**) represent "the interval between touchdowns within a limb girdle divided by the total contact duration of the limb girdle" (p. 4). Dunham *et al*. (2020a) used these to differentiate symmetrical gaits ("temporal lag between the left and right limbs in each girdle amounted to 50±10% of stride duration") from asymmetrical gaits (values outside the symmetrical gait range) (p. 3). Within asymmetrical gaits, these variables were additionally used to differentiate bounds (both forelimb and hindlimb stance periods were nearly simultaneous), half-bounds (hindlimb stance periods were nearly simultaneous
@@ -124,10 +156,11 @@ tab1 <- cbind(tab1a,tab1b) #Combining the above two tables to more accurately re
 tab1 <- kable(tab1, caption = "Table 1. Number of strides for different substrate diameter and orientation categories in free-ranging <i>Saguinus tripartitus</i> and <i>Cebuella pygmaea</i>")|> #Adding a title
         add_header_above(c(" " = 1, "Substrate diameter" = 3, "Substrate orientation" = 3))|> #Adding subtitles over the specified groups of columns
         kable_styling(full_width = FALSE) |> #Fixing the spacing of the columns, which were crowded together without this specification
-        row_spec(0, extra_css = "margin-bottom: 10px;") #Fixing the spacing of the rows, which were crowded together without this specification
+        row_spec(0, extra_css = "margin-bottom: 10px;") |> #Fixing the spacing of the rows, which were crowded together without this specification
+        column_spec(1, italic = TRUE) #Italicizing the scientific names pulled from the variable Binomial
 (tab1)
 ```
-Here is Table 1 for comparison (Dunham *et al*., 2020, p.4):
+Here is Table 1 for comparison (Dunham *et al*., 2020a, p.4):
 
 ```{r echo = FALSE, width = "###px"}
 knitr::include_graphics("images/Table1.jpg") #Embedding .jpg from folder in repo
@@ -135,25 +168,209 @@ knitr::include_graphics("images/Table1.jpg") #Embedding .jpg from folder in repo
 
 My values for the number of strides observed for each substrate orientation category match exactly. However, looking instead at substrate diameter, while the stride numbers sum to the correct number of observations for *Saguinus tripartitus* (n=108) and *Cebuella pygmaea* (n=101), my distribution of strides across substrate diameter categories does not match Table 1 (Dunham *et al.*, 2020a). Dunham et al. (2020a) state that the variable relative branch diameter (**relBrnchDiamNsTl**) is a ratio of the branch diameter relative to primate body length measure from nose to base of tail (p. 4). Because a small substrate was defined as one "less than half of an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** < 0.5 (Dunham *et al*., 2020a, p. 4). Because a medium substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where 0.5 >= **relBrnchDiamNst** <= 1 (Dunham *et al*., 2020a, p. 4). Lastly, because a large substrate was defined as one "between half and equal to an individual’s trunk diameter," I assigned this category to observations where **relBrnchDiamNst** > 1 (Dunham *et al*., 2020a, p. 4). Therefore, while I believe my assignment of these categories matches their presented definitions, there appears to be some discrepancy between how I assigned these categories and how they were assigned by Dunham *et al*. (2020a). One potential explanation is that **relBrnchDiamNst** in the published dataset is likely a Box–Cox transformed value, as other variables in the published dataset clearly are already transformed according to the methods outlined by Dunham *et al*.'s (2020a) in the "Statistical analyses" section (p. 4). I unfortunately cannot revert these values back to their raw values to test if this is the issue because the lambda value used as the transformation parameter is not specified. 
 
+
 ## Inferential Statistical Analysis
 
 ### Linear Mixed Models
 
+Dunham *et al.* (2020a) state that they used the packages {lme4} and {lmerTest} to carry out their linear mixed models in R, so I will be using this method as well. 
+
++++random_effects+++
+
 ```{r}
+saguinus <- d |> filter(Genus == "Saguinus")
+cebuella <- d |> filter(Genus == "Cebuella")
+
+#For Saguinus, effect of substrate diameter and substrate orientation on relative speed
+m1s <- lmer(relSpeed ~ relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+(anova(m1s))
+```
+
+```{r}
+#For Cebuella, effect of substrate diameter and substrate orientation on relative speed
+m1c <- lmer(relSpeed ~ relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
+(anova(m1c))
+```
+
+```{r}
+#For Saguinus, effect of substrate diameter and substrate orientation on mean duty factor
+m2s <- lmer(Meandf ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+(anova(m2s))
+```
+
+```{r}
+#For Cebuella, effect of substrate diameter and substrate orientation on mean duty factor
+m2c <- lmer(Meandf ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
+(anova(m2s))
+```
+
+```{r}
+#For Saguinus, effect of substrate diameter and substrate orientation on mean number of supporting limbs
+m3s <- lmer(MeanNSL ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+(anova(m3s))
+```
+
+```{r}
+#For Cebuella, effect of substrate diameter and substrate orientation on mean number of supporting limbs
+m3c <- lmer(MeanNSL ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
+(anova(m3c))
+```
+
+```{r}
+#For Saguinus, effect of substrate diameter and substrate orientation on percent aerial phase
+m6s <- lmer(PercAerial ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = saguinus, na.action = na.omit)
+anova(m6s)
+```
+
+```{r}
+#For Cebuella, effect of substrate diameter and substrate orientation on percent aerial phase
+m6c <- lmer(PercAerial ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient + (1|MovClip), data = cebuella, na.action = na.omit)
+anova(m6c)
+```
+
+### Binary logistic mixed-effects models
+
+```{r, warning = FALSE}
+#For Saguinus, effect of substrate diameter and substrate orientation on relative forelimb lead duration
+
+m4s <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
+       family = "binomial", data = saguinus)
+(summary(m4s))
+```
+
+
+```{r, warning = FALSE}
+#For Cebuella, effect of substrate diameter and substrate orientation on relative forelimb lead duration
+
+m4c <- glm(formula = relFLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
+       family = "binomial", data = cebuella)
+(summary(m4c))
+```
+
+```{r, warning = FALSE}
+#For Saguinus, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
+m5s <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
+       family = "binomial", data = saguinus)
+(summary(m5s))
+```
+
+```{r, warning = FALSE}
+#For Cebuella, effect of substrate diameter and substrate orientation on relative hindlimb lead duration
+
+m5c <- glm(formula = relHLldMS ~ relSpeed + relBrnchDiamNsTl + Sin_SbstOrient + Cos_SbstOrient,
+       family = "binomial", data = cebuella)
+(summary(m5c))
+```
+
+## Visualization
+
+```{r, warning = FALSE}
+#For Saguinus, effect of substrate diameter on relative speed
+
+p1 <- ggplot(data = d, aes(x = relSpeed, y = Meandf), color = Genus) +
+  geom_point(aes(fill = Genus), alpha = 0.5) +
+  geom_smooth(method="lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  scale_fill_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) +
+  labs(y = "Mean DF", x = element_blank()) + #Specifying axis labels
+  ylim(0,1) + #Setting the y-axis range
+  xlim(0,5) + #Setting the x-axis range
+  theme(legend.background = element_rect(fill = NA), #Formatting the legend
+        legend.title=element_blank(), 
+        legend.position = c(0.1, 0.99), 
+        legend.justification = c("left", "top"), 
+        panel.background = element_blank(), #Formatting the background
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid=element_line("gray92"))
+
+(p1)
 
 ```
 
-We used linear mixed models to examine the effects of substrate
-diameter and substrate orientation on continuous kinematic
-variables, including relative speed, mean DF, mean NSL, relative
-FLLD, relative HLLD and percent aerial phase. Relative speed was
-entered as a covariate in statistical models for mean DF, mean NSL,
-relative FLLD, relative HLLD and percent aerial phase in order to
-control for speed-related effects on these kinematic variables.
+```{r, warning = FALSE}
+p2 <- ggplot(data = d, aes(x = relSpeed, y = MeanNSL), color = Genus) +
+  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  labs(y = "Mean NSL", x = element_blank()) + #Specifying axis labels
+  ylim(0,4) + #Setting the y-axis range
+  xlim(0,5) + #Setting the x-axis range
+  theme(legend.position = "none", #Removing the legend
+        panel.background = element_blank(), #Formatting the background
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid=element_line("gray92"))
 
-[Be sure to **thoroughly** explain what replications you are doing and comment your code so that it is easy for a reader to understand. Include in this section relevant tables/figures/values from the original paper for comparison to what you accomplished with your replication. Note that I want you to do the bulk of any *exposition* using text and markdown syntax outside of code blocks. That is, your document should not just be one big code block with ***R*** style comments but rather a nicely formatted report with code separated from exposition, interpretation, and dicussion.]
+(p2)
+```
 
-## Visualization
+```{r, warning = FALSE}
+p3 <- ggplot(data = d, aes(x = relSpeed, y = relFLldMS), color = Genus) +
+  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  labs(y = "Relative FLLD", x = element_blank()) + #Specifying axis labels
+  ylim(-0.2,0.6) + #Setting the y-axis range
+  xlim(0,5) + #Setting the x-axis range
+  theme(legend.position = "none", #Removing the legend
+        panel.background = element_blank(), #Formatting the background
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid=element_line("gray92"))
+
+(p3)
+```
+
+```{r, warning = FALSE}
+p4 <- ggplot(data = d, aes(x = relSpeed, y = relHLldMS), color = Genus) +
+  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  labs(y = "Relative HLLD", x = "Relative speed") + #Specifying axis labels
+  ylim(-0.2,0.6) + #Setting the y-axis range
+  xlim(0,5) + #Setting the x-axis range
+  theme(legend.position = "none", #Removing the legend
+        panel.background = element_blank(), #Formatting the background
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid=element_line("gray92"))
+
+(p4)
+```
+
+```{r, warning = FALSE}
+p5 <- ggplot(data = d, aes(x = relSpeed, y = PercAerial, color = Genus)) +
+  geom_point(aes(color = Genus), alpha = 0.5) + 
+  geom_smooth(method= "lm", formula = y ~ x, aes(color = Genus)) + #Adding regression lines
+  scale_color_manual(values = c("Saguinus" = "gray50", "Cebuella" = "black")) + #Setting colors that match Figure 3
+  labs(caption = "Fig. 3. Variation in callitrichine asymmetrical gait kinematics (n=209 strides) in relation to relative speed", y = "% Aerial phase", x = "Relative speed") + #Specifying axis labels
+  ylim(0,0.6) + #Setting the y-axis range
+  xlim(0,5) + #Setting the x-axis range
+  theme(legend.position = "none", #Removing the legend
+        panel.background = element_blank(), #Formatting the background
+        panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid = element_line("gray92"),
+        plot.caption = element_text(hjust=0.5, size=rel(0.5), face = "bold"))
+
+(p5)
+```
+
+Here is my full replication of Figure 3:
+
+```{r, echo = FALSE, warning = FALSE}
+#Assembling Fig 3
+p1andp2 <- plot_grid(p1, p2, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
+p3andp4 <- plot_grid(p3, p4, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
+p5andNULL <- plot_grid(p5, NULL, ncol = 2, nrow = 1, align = "hv", rel_widths = c(1,1))
+
+print(p1andp2)
+print(p3andp4)
+print(p5andNULL)
+```
+
+Here is the Dunham *et al.* (2020a) full Figure 3 for comparison (p. 7):
+```{r echo = FALSE, width = "###px"}
+
+knitr::include_graphics("images/Figure3.jpg") #Embedding .jpg from folder in repo
+```
+
 
 ## Summary/Discussion
 
